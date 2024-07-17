@@ -2,8 +2,8 @@
 
 ## Pré-requis
 
-Cursus Java de base
-Formation Spring Initiation (niveau 1) : Injection de dépendance, utilisation des annotations Spring, fonctionnement du contexte d'application, utilisation des properties, profiles...  
+Cursus Java de base  
+Formation Spring Initiation (niveau 1) : Injection de dépendance, utilisation des annotations Spring, fonctionnement du contexte d'application, utilisation des properties, profiles...   
 Souhaitable formation Hibernate niveau 1 : les TPs disposeront d'objets directement mappés, nous utiliserons Spring-Data qui est une surcouche du framework Hibernate  
 
 
