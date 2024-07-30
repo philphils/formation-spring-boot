@@ -1,0 +1,10 @@
+*.settings/
+*target/
+*.project
+*.classpath
+*.class
+*build/
+*.factorypath
+*.apt_generated/
+*.metadata
+*.~lock*
