@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Formation Spring-Boot</title>
+
+  <!-- Définir <base> dynamiquement -->
+  <script>
+    if (location.hostname === "localhost") {
+      // en local (http://localhost:8000/index.html)
+      document.write('<base href="/">');
+    } else {
+      // sur GitHub Pages (repo "formation-spring-boot")
+      document.write('<base href="/formation-spring-boot/">');
+    }
+  </script>
+
+  <!-- Reveal.js -->
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js/dist/reveal.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js/dist/theme/white.css" id="theme">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js/plugin/highlight/zenburn.css">
+  <!-- ton CSS perso -->
+  <link rel="stylesheet" href="diapo_style.css">
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Chapitre 0 : Intro / plan) -->
+      <section data-markdown="chapitres/chapitre0-intro.md" data-separator="^---$"
+        data-separator-vertical="^--$">
+      </section>
+
+      <!-- Chapitre 1 : Rappel le noyau Spring-->
+      <section data-markdown="chapitres/chapitre1-rappel-noyau.md" data-separator="^---$"
+        data-separator-vertical="^--$">
+      </section>
+
+      <!-- Chapitre 2 : Spring-Boot Archirtecte-->
+      <section data-markdown="chapitres/chapitre2-architecte.md" data-separator="^---$"
+        data-separator-vertical="^--$">
+      </section>
+
+      <!-- Chapitre 3 : L'Auto-configuration-->
+      <section data-markdown="chapitres/chapitre3-auto-configuration.md" data-separator="^---$"
+        data-separator-vertical="^--$">
+      </section>
+
+      <!-- Chapitre 4 : Création d'un projet Spring-Boot -->
+      <section data-markdown="chapitres/chapitre4-creation.md" data-separator="^---$"
+        data-separator-vertical="^--$">
+      </section>
+
+
+      <!-- Fichier complet -->
+      <section data-markdown="diapo_formation_spring_boot_convert_clean.md" data-separator="^---$"
+        data-separator-vertical="^--$">
+      </section>
+
+    </div>
+
+  </div>
+
+  <!-- Scripts Reveal -->
+  <script src="https://unpkg.com/reveal.js/dist/reveal.js"></script>
+  <script src="https://unpkg.com/reveal.js/plugin/markdown/markdown.js"></script>
+  <script src="https://unpkg.com/reveal.js/plugin/highlight/highlight.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: 'c/t',
+      plugins: [RevealMarkdown, RevealHighlight],
+      highlight: { highlightOnLoad: true }
+    });
+  </script>
+</body>
+
+</html>

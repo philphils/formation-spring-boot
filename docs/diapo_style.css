@@ -1,0 +1,73 @@
+/* Fond blanc et texte noir */
+.reveal {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Titres */
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+    color: #000000 !important;
+    font-weight: bold;
+    text-transform: none;
+    /* évite les majuscules forcées */
+}
+
+/* Taille des titres */
+.reveal section h1 {
+    font-size: 1.8em;
+    white-space: nowrap;
+    text-align: center !important;
+}
+
+.reveal section h2 {
+    font-size: 1.6em;
+}
+
+.reveal section h3 {
+    font-size: 1.2em;
+}
+
+/* Listes alignées à gauche */
+.reveal ul {
+    /* list-style-type: none !important; */
+    text-align: left;
+    font-size: 0.9em;
+    margin-left: 2em;
+    line-height: 1.6em;
+}
+
+.reveal ul ul {
+    font-size: 0.85em;
+}
+
+
+/* .reveal ul li::marker {
+    content: "";
+    /* supprime le point */
+/* } */
+
+/* Liens */
+.reveal a {
+    color: #0645ad;
+    /* bleu classique lisible */
+}
+
+/* Images centrées */
+/* .reveal section img {
+    display: block;
+    margin: 1em auto;
+    max-height: 70vh;
+} */
+/* Toutes les images dans les slides */
+.reveal section img {
+  max-height: 25vh; /* limite la hauteur à 60% de la fenêtre */
+  height: auto;
+  width: auto;
+}
+
+.reveal section img.image-large {
+  max-height: 50vh !important;
+}
