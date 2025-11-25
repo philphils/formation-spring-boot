@@ -1,57 +1,4 @@
-# Structure et configuration
-# d’un projet Spring Boot 
-
-
---
-# Structure type Spring Boot
-
-![](./img/diapo_formation_spring_boot_6.png) <!-- .element: class="image-large" -->
-
---
-# La classe Application
-
-* On retrouve le découpage en couches classique : controller\, repository\, model… 
-
-* La particularité est la classe     \*Application    : 
-
-* @SpringBootApplication 
-
-* public         class         DemoApplication     \{ 
-
-* public         static         void         main    (    String    []     args    ) \{ 
-
-* SpringApplication    \.    run    (    DemoApplication    \.    class    \,     args    ); 
-
-* \} 
-
-* \} 
-
-* Il s’agit d’un bean Spring permettant de lancer l’application 
-
-* L’annotation     @SpringBootApplication     combine les annotations :     @Configuration    \,     @EnableAutoConfiguration     et     @ComponentScan 
-
-
-
---
-# Les fichiers application-*.properties
-
-* Les properties doivent suivre le pattern     application\-\*\.properties     pour être chargés automatiquement 
-
-* Le fichier     application\.properties     est chargé par défaut 
-
-* Les autres fichiers sont chargés ou non selon les profiles activés 
-
-* On verra dans la partie suivante la gestion des profiles et properties 
-
-
-![](./img/diapo_formation_spring_boot_7.png)
-
-* TP1 :  
-
-* Créer son projet Spring\-Boot 
-
-* Spring Boot Configuration 
-
+# Spring Boot Configuration 
 
 --
 # Premières fonctionnalités
@@ -64,12 +11,8 @@
 
 * D’autres fonctionnalités plus avancés comme le cryptage de properties 
 
-
-
 --
 # Centralisation : l’objet Environment
-
-
 
 *  Spring\-Boot centralise les properties de différentes sources au sein de l’objet     Environment 
 *  Les properties de différentes origines sont ainsi rendues accessibles à toute l’appli via     @Value     ou encore     @ConfigurationProperties 
@@ -81,9 +24,6 @@
    *  @PropertySource 
    *  @ConfigurationProperties 
    *  Propriétés par défaut \.\.\. 
-
-
-
 
 --
 # Schéma de gestion des properties
