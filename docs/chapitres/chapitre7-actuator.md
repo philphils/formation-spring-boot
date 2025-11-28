@@ -242,16 +242,8 @@ curl -X POST http://localhost:8080/actuator/loggers/fr.insee.formation \
 * **Point d'attention** : si les endpoints n'apparaissent pas, vérifier la valeur de `management.endpoints.web.exposure.include`
 
 --
-# TP2 : Mettre en place l'Actuator
+# TP2
 
-* Ajouter la dépendance `spring-boot-starter-actuator` dans le `pom.xml`.
+Mettre en place l'Actuator
 
-* Configurer `application.properties` pour exposer les endpoints : `health`, `info`, `metrics`, `beans`, `loggers`.
-
-* Activer les détails du health endpoint.
-
-* Démarrer l'application et tester les endpoints via curl ou navigateur.
-
-* Vérifier les informations affichées : santé, métriques JVM, liste des beans, variables d'environnement.
-
-* Modifier dynamiquement le niveau de log via `/actuator/loggers` et constater le changement.
+![](./img/diapo_formation_spring_boot_12.png)
