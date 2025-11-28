@@ -70,4 +70,5 @@
 
 .reveal section img.image-large {
   max-height: 50vh !important;
+  max-width: 50vh;
 }
