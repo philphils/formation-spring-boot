@@ -21,4 +21,8 @@ Créatin d'un couche de persistence des données avec Spring-Data
 Gestion de la sécurité avec Spring-Security  
 Apport de Spring-Boot pour les tests  
 
-A la fin des TPs nous devrions avoir produit une mini "API Sirene", avec quelques endpoins, une couche de persistance, et des tests.  
+A la fin des TPs nous devrions avoir produit une mini "API Sirene", avec quelques endpoins, une couche de persistance, et des tests. 
+
+## Licence
+Ce dépôt (code et supports de formation) est distribué sous licence [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/deed.fr).
+Vous pouvez réutiliser, modifier et partager librement ce contenu, à condition de mentionner l’auteur.
