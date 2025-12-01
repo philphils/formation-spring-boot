@@ -7,23 +7,25 @@
 1. **Créer `src/main/resources/application-dev.properties`** :
    ```properties
    app.environment=DEVELOPMENT
-   app.debug=true
-   database.url=jdbc:h2:mem:devdb
-   database.username=dev_user
-   database.password=dev_password
    logging.level.root=DEBUG
-   logging.level.fr.insee.formation=TRACE
+   logging.level.fr.insee.formation=DEBUG
+   
+   spring.datasource.url=jdbc:h2:mem:devdb
+   spring.datasource.username=sa
+   spring.datasource.password=
+   spring.h2.console.enabled=true
    ```
 
 2. **Créer `src/main/resources/application-integration.properties`** :
    ```properties
    app.environment=INTEGRATION
-   app.debug=false
-   database.url=jdbc:h2:mem:integrationdb
-   database.username=integration_user
-   database.password=integration_secure_pass
-   logging.level.root=INFO
-   logging.level.fr.insee.formation=DEBUG
+   logging.level.root=WARN
+   logging.level.fr.insee.formation=INFO
+   
+   spring.datasource.url=jdbc:h2:file:./data/integrationdb;MODE=MySQL
+   spring.datasource.username=user_integration
+   spring.datasource.password=pwd_integration
+   spring.h2.console.enabled=false
    ```
 
 3. **Compléter `src/main/resources/application.properties`** (profil par défaut) :
@@ -31,10 +33,7 @@
    app.name=Formation Spring Boot
    app.version=1.0.0
    app.environment=DEFAULT
-   app.debug=false
-   database.url=jdbc:h2:mem:testdb
-   database.username=sa
-   database.password=
+   
    logging.level.root=WARN
    ```
 
@@ -82,7 +81,7 @@
    public class IntegrationDataSourceService implements DataSourceService {
        @Override
        public String getInfo() {
-           return "Using INTEGRATION H2 database (integration profile)";
+         return "Using INTEGRATION H2 database with file (integration profile)";
        }
    }
    ```
@@ -101,7 +100,7 @@
    public class DefaultDataSourceService implements DataSourceService {
        @Override
        public String getInfo() {
-           return "Using DEFAULT in-memory H2 database (default profile)";
+          return "Using DEFAULT : no specific database configuration (default profile)";
        }
    }
    ```
@@ -122,19 +121,15 @@
    public class EnvironmentController {
        @Value("${app.environment}")
        private String environment;
-       
-       @Value("${app.debug}")
-       private boolean debug;
-       
-       @Value("${database.url}")
+   
+       @Value("${spring.datasource.url}")
        private String dbUrl;
-
+   
        @GetMapping("/environment")
        public Map<String, Object> getEnvironment() {
            Map<String, Object> result = new HashMap<>();
            result.put("environment", environment);
-           result.put("debug", debug);
-           result.put("database.url", dbUrl);
+           result.put("databaseUrl", dbUrl);
            return result;
        }
    }
