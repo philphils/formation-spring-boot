@@ -4,23 +4,39 @@
 
 #### Partie 1 : Créer les fichiers de configuration par profile
 
-1. **Créer `src/main/resources/application-dev.properties`** :
+1. **Compléter `src/main/resources/application.properties`** (profil par défaut) :
+   ```properties
+   app.name=Formation Spring Boot
+   app.version=1.0.0
+   app.environment=DEFAULT
+   
+   logging.level.root=WARN
+   
+   spring.datasource.url=jdbc:h2:mem:defaultdb
+   spring.datasource.username=sa
+   spring.datasource.password=
+   ```
+
+2. **Créer `src/main/resources/application-dev.properties`** :
    ```properties
    app.environment=DEVELOPMENT
+   
    logging.level.root=DEBUG
    logging.level.fr.insee.formation=DEBUG
    
    spring.datasource.url=jdbc:h2:mem:devdb
-   spring.datasource.username=sa
-   spring.datasource.password=
+   spring.datasource.username=dev_user
+   spring.datasource.password=dev_password
    spring.h2.console.enabled=true
-
-   management.endpoint.env.show-values=ALWAYS
+   
+   management.endpoint.env.show-values=ALWAYS 
    ```
 
-2. **Créer `src/main/resources/application-integration.properties`** :
+
+3. **Créer `src/main/resources/application-integration.properties`** :
    ```properties
    app.environment=INTEGRATION
+
    logging.level.root=WARN
    logging.level.fr.insee.formation=INFO
    
@@ -30,15 +46,6 @@
    spring.h2.console.enabled=false
    ```
 
-3. **Compléter `src/main/resources/application.properties`** (profil par défaut) :
-   ```properties
-   app.name=Formation Spring Boot
-   app.version=1.0.0
-   app.environment=DEFAULT
-   
-   logging.level.root=WARN
-   ```
-
 #### Partie 2 : Créer des beans liés aux profiles
 
 1. **Créer une interface de service** :
@@ -46,63 +53,94 @@
    package fr.insee.formation.service;
 
    public interface DataSourceService {
+   
        String getInfo();
+   
+       String getDbUrl();
+   
    }
    ```
 
-2. **Implémenter le service pour le profil `dev`** :
+2. **Implémenter le service par défaut** (quand aucun profil spécifique n'est actif) :
+   
    ```java
    package fr.insee.formation.service.impl;
-
+   
+   import org.springframework.beans.factory.annotation.Value;
    import org.springframework.context.annotation.Profile;
    import org.springframework.stereotype.Service;
-
+   
    import fr.insee.formation.service.DataSourceService;
-
+   
    @Service
-   @Profile("dev")
-   public class DevDataSourceService implements DataSourceService {
+   @Profile("!dev & !integration")
+   public class DefaultDataSourceService implements DataSourceService {
+       
+       @Value("${spring.datasource.url}")
+       private String dbUrl;
+   
        @Override
        public String getInfo() {
-           return "Using DEVELOPMENT in-memory H2 database (dev profile)";
+           return "Using DEFAULT : no specific database configuration (default profile)";
+       }
+   
+       public String getDbUrl() {
+           return dbUrl;
        }
    }
    ```
 
-3. **Implémenter le service pour le profil `integration`** :
+4. **Implémenter le service pour le profil `dev`** :
    ```java
    package fr.insee.formation.service.impl;
-
+   
+   import org.springframework.beans.factory.annotation.Value;
    import org.springframework.context.annotation.Profile;
    import org.springframework.stereotype.Service;
-
+   
    import fr.insee.formation.service.DataSourceService;
+   
+   @Service
+   @Profile("dev")
+   public class DevDataSourceService implements DataSourceService {
+   
+       @Value("${spring.datasource.url}")
+       private String dbUrl;
+   
+       @Override
+       public String getInfo() {
+           return "Using DEVELOPMENT in-memory H2 database (dev profile)";
+       }
+   
+       @Override
+       public String getDbUrl() {
+           return dbUrl;
+       }
+   }
+   ```
 
+5. **Implémenter le service pour le profil `integration`** :
+   Cette implémentation masque l'url de la base pour des raisons de sécurité 😎
+   
+   ```java
+   package fr.insee.formation.service.impl;
+   
+   import org.springframework.context.annotation.Profile;
+   import org.springframework.stereotype.Service;
+   
+   import fr.insee.formation.service.DataSourceService;
+   
    @Service
    @Profile("integration")
    public class IntegrationDataSourceService implements DataSourceService {
        @Override
        public String getInfo() {
-         return "Using INTEGRATION H2 database with file (integration profile)";
+           return "Using INTEGRATION H2 database with file (integration profile)";
        }
-   }
-   ```
-
-4. **Implémenter le service par défaut** (quand aucun profil spécifique n'est actif) :
-   ```java
-   package fr.insee.formation.service.impl;
-
-   import org.springframework.context.annotation.Profile;
-   import org.springframework.stereotype.Service;
-
-   import fr.insee.formation.service.DataSourceService;
-
-   @Service
-   @Profile("!dev & !integration")
-   public class DefaultDataSourceService implements DataSourceService {
+   
        @Override
-       public String getInfo() {
-          return "Using DEFAULT : no specific database configuration (default profile)";
+       public String getDbUrl() {
+           return "NO WAY !!! You'll never get this information !";
        }
    }
    ```
@@ -110,34 +148,42 @@
 #### Partie 3 : Créer des endpoints pour tester les profiles
 
 1. **Créer `EnvironmentController`** pour afficher l'environnement actif :
+
+   Les valeurs des properties récupérées variront selon l'environnement défini au démarrage de l'application.
+   
    ```java
    package fr.insee.formation.controller;
-
+   
    import org.springframework.beans.factory.annotation.Value;
    import org.springframework.web.bind.annotation.GetMapping;
    import org.springframework.web.bind.annotation.RestController;
    import java.util.HashMap;
    import java.util.Map;
-
+   
    @RestController
    public class EnvironmentController {
+   
+       @Value("${app.name}")
+       private String name;
+   
+       @Value("${app.version}")
+       private String version;
+   
        @Value("${app.environment}")
        private String environment;
-   
-       @Value("${spring.datasource.url}")
-       private String dbUrl;
    
        @GetMapping("/environment")
        public Map<String, Object> getEnvironment() {
            Map<String, Object> result = new HashMap<>();
+           result.put("Application name", name);
+           result.put("Application version", version);
            result.put("environment", environment);
-           result.put("databaseUrl", dbUrl);
            return result;
        }
    }
    ```
 
-2. **Créer `DataSourceController`** pour vérifier quel bean de service est actif :
+3. **Créer `DataSourceController`** pour vérifier quel bean de service est actif :
    ```java
    package fr.insee.formation.controller;
 
@@ -150,6 +196,7 @@
 
    @RestController
    public class DataSourceController {
+
        @Autowired(required = false)
        private DataSourceService dataSourceService;
 
@@ -160,6 +207,7 @@
                result.put("status", "FOUND");
                result.put("service_class", dataSourceService.getClass().getSimpleName());
                result.put("message", dataSourceService.getInfo());
+               result.put("dbUrl", dataSourceService.getDbUrl());
            } else {
                result.put("status", "NOT_FOUND");
                result.put("message", "Aucun DataSourceService disponible pour ce profil");
