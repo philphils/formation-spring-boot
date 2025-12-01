@@ -14,6 +14,8 @@
    spring.datasource.username=sa
    spring.datasource.password=
    spring.h2.console.enabled=true
+
+   management.endpoint.env.show-values=ALWAYS
    ```
 
 2. **Créer `src/main/resources/application-integration.properties`** :
@@ -168,6 +170,8 @@
    ```
 
 #### Partie 4 : Tester les différentes méthodes d'activation de profiles
+
+- **Attention :** Certaines valeurs affichées par l'Actuator sont masqués par défaut par Spring-Boot. C'est pourquoi en dev cette ligne a été ajoutée au fichier de properties : `management.endpoint.env.show-values=ALWAYS`
 
 1. **Méthode A : Via `application.properties`** :
    - Modifier `src/main/resources/application.properties` et ajouter :
