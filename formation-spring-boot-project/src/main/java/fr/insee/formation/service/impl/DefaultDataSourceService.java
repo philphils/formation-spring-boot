@@ -10,6 +10,6 @@ import fr.insee.formation.service.DataSourceService;
 public class DefaultDataSourceService implements DataSourceService {
     @Override
     public String getInfo() {
-        return "Using DEFAULT in-memory H2 database (default profile)";
+        return "Using DEFAULT : no specific database configuration (default profile)";
     }
 }
