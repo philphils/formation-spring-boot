@@ -9,6 +9,7 @@
 
    @RestController
    public class DataSourceController {
+
        @Autowired(required = false)
        private DataSourceService dataSourceService;
 
@@ -19,6 +20,7 @@
                result.put("status", "FOUND");
                result.put("service_class", dataSourceService.getClass().getSimpleName());
                result.put("message", dataSourceService.getInfo());
+               result.put("dbUrl", dataSourceService.getDbUrl());
            } else {
                result.put("status", "NOT_FOUND");
                result.put("message", "Aucun DataSourceService disponible pour ce profil");

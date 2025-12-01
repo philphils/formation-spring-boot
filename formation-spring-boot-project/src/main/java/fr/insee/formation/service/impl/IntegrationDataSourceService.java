@@ -12,4 +12,9 @@ public class IntegrationDataSourceService implements DataSourceService {
     public String getInfo() {
         return "Using INTEGRATION H2 database with file (integration profile)";
     }
+
+    @Override
+    public String getDbUrl() {
+        return "NO WAY !!! You'll never get this information !";
+    }
 }
