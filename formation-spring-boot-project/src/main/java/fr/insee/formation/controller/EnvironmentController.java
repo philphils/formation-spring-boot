@@ -8,17 +8,22 @@ import java.util.Map;
 
 @RestController
 public class EnvironmentController {
+
+    @Value("${app.name}")
+    private String name;
+
+    @Value("${app.version}")
+    private String version;
+
     @Value("${app.environment}")
     private String environment;
-
-    @Value("${spring.datasource.url}")
-    private String dbUrl;
 
     @GetMapping("/environment")
     public Map<String, Object> getEnvironment() {
         Map<String, Object> result = new HashMap<>();
+        result.put("Application name", name);
+        result.put("Application version", version);
         result.put("environment", environment);
-        result.put("databaseUrl", dbUrl);
         return result;
     }
 }
