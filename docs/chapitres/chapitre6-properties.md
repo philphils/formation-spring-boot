@@ -154,8 +154,6 @@ app.database.credentials.password=secret
 * Pour d'importantes structures dynamiques, préférer `@ConfigurationProperties` sur des classes si vous avez besoin d'un comportement mutable ou d'API de construction personnalisée.
 * Pensez à ajouter la dépendance `spring-boot-configuration-processor` pour générer les métadonnées (auto‑complétion dans l'IDE).
 
-
-
 --
 # Le module
 # spring-boot-configuration-processor
@@ -164,10 +162,11 @@ app.database.credentials.password=secret
    *  auto\-complétion des fichiers properties (avec Eclipse version récente) 
    *  ajout de meta\-données sur les properties depuis les commentaires ou annotations Java 
    *  validation du contenu des properties 
-*  Un fichier     spring\-configuration\-metadata\.json     est  généré dans target/\.\.\./classes/META\-INF qui contient les meta\-données 
 
 --
 # Auto-complétion et méta-données
+
+*  Un fichier     `spring-configuration-metadata.json`     est  généré dans `target/.../classes/META-INF` qui contient les meta\-données 
 
 * Ex avec : 
 ```java
@@ -177,15 +176,13 @@ app.database.credentials.password=secret
 private Integer nbLignes = 10;
 ``` 
 
-* On aura de l’auto\-complétion et des infos au survol :  
-
-* Attention : Faire un Maven clean \+ install pour que les modifs soient prises en compte 
+* On aura de l’auto\-complétion et des infos au survol (Attention : Faire un Maven clean + install)
 
 --
 # Validation des peroperties
 
+* Ex : ![](./img/diapo_formation_spring_boot_10.png)
+
 * Il est possible d’ajouter des contraintes de validation avec Jakarta. Ex : `@Min`, `@Max`, `@NotNull` ... 
 
 * Il faut alors annoter la classe avec `@Validated` pour que la validation soit effectuée au démarrage du serveur 
-
-![](./img/diapo_formation_spring_boot_10.png)

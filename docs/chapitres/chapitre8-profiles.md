@@ -22,11 +22,11 @@
 
 * Spring Boot va encore plus loin pour faciliter les configurations multi\-environnement 
 
+* On va donc définir un Profile pour chaque environnement d’exécution du code applicatif 
+
 --
 # Des jeux de properties
 # par profile
-
-* On va donc définir un Profile pour chaque environnement d’exécution du code applicatif 
 
 * Spring-Boot charge par défaut le fichier `application.properties` situé dans `/resources` 
 
