@@ -162,14 +162,19 @@ Créez l'interface `EtablissementProjection` dans le package `fr.insee.formation
 ### 4.1. Repository `UniteLegaleRepository`
 Créez l'interface `UniteLegaleRepository` dans le package `fr.insee.formation.repository` :
 - Cette interface doit étendre `JpaRepository<UniteLegale, Long>`.
-- Ajoutez des méthodes pour rechercher des unités légales par `siren`, par `denomination` (en utilisant `Containing`), et par `categorieJuridique`.
-- Ajoutez une méthode personnalisée utilisant `@Query` pour récupérer une projection DTO des unités légales par `categorieJuridique`.
+- Ajoutez des méthodes par convention de nommage pour rechercher :
+    - des unités légales par `siren`
+    - des unités légales dont la `denomination` contient une chaîne de caractère
+    - des projections DTO des unités légales par `categorieJuridique`.
+- Ajoutez une méthode personnalisée utilisant `@Query` pour récupérer des unités légales par `categorieJuridique` avec leurs établissements instanciés.
 
 ### 4.2. Repository `EtablissementRepository`
 Créez l'interface `EtablissementRepository` dans le package `fr.insee.formation.repository` :
 - Cette interface doit étendre `JpaRepository<Etablissement, Long>`.
-- Ajoutez des méthodes pour rechercher des établissements par `siret`, par `uniteLegale`, et par `adresse` (en utilisant `Containing`).
-- Ajoutez une méthode personnalisée utilisant `@Query` pour récupérer une projection DTO des établissements par `siren` de l'unité légale.
+- Ajoutez des méthodes par convention de nommage pour rechercher :
+    -  des établissements par `siret`
+    - des projections DTO des établissements par `uniteLegale`
+    - des établissements dont l'`adresse` commence par une chaîne de caractère
 
 ---
 
