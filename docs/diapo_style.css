@@ -72,3 +72,5 @@
   max-height: 50vh !important;
   max-width: 50vh;
 }
+
+.reveal table { font-size: 0.75em; }

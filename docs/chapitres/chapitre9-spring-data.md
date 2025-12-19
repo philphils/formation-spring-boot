@@ -239,6 +239,51 @@ public class UserService {
     ``` 
 
 --
+## Récapitulatif des opérateurs
+
+| Opérateur          | Équivalent SQL                     |
+|--------------------|------------------------------------|
+| `And`              | `WHERE name = ? AND email = ?`     |
+| `Or`               | `WHERE name = ? OR email = ?`      |
+| `Is`, `Equals`     | `WHERE name = ?`                   |
+| `Between`          | `WHERE age BETWEEN ? AND ?`        |
+| `LessThan`         | `WHERE age < ?`                    |
+| `LessThanEqual`    | `WHERE age <= ?`                   |
+| `GreaterThan`      | `WHERE age > ?`                    |
+| `GreaterThanEqual` | `WHERE age >= ?`                   |
+
+
+--
+## Récapitulatif des opérateurs
+
+| Opérateur          | Équivalent SQL                     |
+|--------------------|------------------------------------|
+| `After`            | `WHERE date > ?`                   |
+| `Before`           | `WHERE date < ?`                   |
+| `IsNull`           | `WHERE name IS NULL`               |
+| `IsNotNull`, `NotNull` | `WHERE name IS NOT NULL`      |
+| `Like`             | `WHERE name LIKE ?`                |
+| `NotLike`          | `WHERE name NOT LIKE ?`            |
+| `StartingWith`     | `WHERE name LIKE ?%`               |
+| `EndingWith`       | `WHERE name LIKE %?`               |
+
+--
+
+## Récapitulatif des opérateurs
+
+| Opérateur          | Équivalent SQL                     |
+|--------------------|------------------------------------|
+| `Containing`       | `WHERE name LIKE %?%`              |
+| `OrderBy`          | `WHERE name = ? ORDER BY age ASC`  |
+| `Not`              | `WHERE name <> ?`                  |
+| `In`               | `WHERE name IN ?`                  |
+| `NotIn`            | `WHERE name NOT IN ?`              |
+| `True`             | `WHERE active = true`              |
+| `False`            | `WHERE active = false`             |
+| `IgnoreCase`       | `WHERE UPPER(name) = UPPER(?)`     |
+
+
+--
 
 ## Les tris et limites
 
