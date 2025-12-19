@@ -614,3 +614,97 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 1. **Utiliser @Primary** : Obligatoire avec plusieurs datasources pour indiquer la source par défaut ➡️ Attention lors de l'injection à éviter les confusion avec `@Qualifier`
 2. **Structurer les packages** : Organiser les entités et les repositories par datasource
 3. **Nommer clairement** : Utiliser des noms explicites pour les beans (`primaryDataSource`, `secondaryDataSource`)
+
+--
+
+## Projections DTO
+
+- Spring Data JPA permet de sélectionner uniquement les champs nécessaires d'une entité, plutôt que de charger l'entité complète.
+- Cela améliore les performances et réduit la consommation de mémoire, surtout lorsque vous n'avez besoin que d'un sous-ensemble des données.
+- Efficace en particulier pour des tables avec de nombreuses colonnes
+
+--
+
+## Projections basées sur des interfaces
+
+- Vous pouvez définir une interface avec les méthodes `getter` des champs que vous souhaitez récupérer.
+- Spring Data JPA génère automatiquement l'implémentation de cette interface lors de l'exécution de la requête.
+
+--
+
+### Exemple
+
+- Définition de l'interface :
+
+    ```java
+    public interface UserNameAndEmailProjection {
+        String getName();
+        String getEmail();
+    }
+    ```
+
+- Utilisation dans le repository :
+
+    ```java
+    @Repository
+    public interface UserRepository extends JpaRepository<User, Long> {
+        List<UserNameAndEmailProjection> findByCountry(Country country);
+    }
+    ```
+
+--
+
+## Projections basées sur des classes DTO
+
+- Vous pouvez définir une classe DTO avec les champs nécessaires.
+- Utilisez l'annotation `@Query` pour spécifier les champs à récupérer.
+
+--
+
+### Exemple classe DTO
+
+```java
+public class UserNameAndEmailDTO {
+    private String name;
+    private String email;
+
+    // Constructeur, getters et setters
+    public UserNameAndEmailDTO(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+}
+```
+
+--
+
+## Utilisation dans le repository :
+
+```java
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    @Query("SELECT 
+        new com.example.UserNameAndEmailDTO(u.name, u.email)
+        FROM User u WHERE u.country = :country")
+    List<UserNameAndEmailDTO> findByCountry(
+                @Param("country") Country country);
+}
+```
+
+--
+
+## Avantages des projections DTO
+
+- **Performance** : Seuls les champs nécessaires sont chargés depuis la base de données.
+- **Réduction de la consommation mémoire** : Moins de données sont transférées et stockées en mémoire.
+- **Flexibilité** : Vous pouvez adapter les données retournées en fonction des besoins de votre application.
+- **Sécurité** : Réduit les risques de fuites de données sensibles en ne retournant que les champs nécessaires.
+
