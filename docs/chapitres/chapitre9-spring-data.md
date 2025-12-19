@@ -708,3 +708,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 - **Flexibilité** : Vous pouvez adapter les données retournées en fonction des besoins de votre application.
 - **Sécurité** : Réduit les risques de fuites de données sensibles en ne retournant que les champs nécessaires.
 
+
+--
+
+# TP4 :  
+
+Spring-Data 
+
+![](./img/diapo_formation_spring_boot_12.png)
