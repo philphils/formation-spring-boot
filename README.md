@@ -140,7 +140,7 @@ public class Etablissement {
     @ManyToOne
     @JoinColumn(name = "unite_legale_id", nullable = false)
     private UniteLegale uniteLegale;
-  
+
     // Les constructeurs, getters et setters sont générés par Lombok
 }
 ```
@@ -189,6 +189,9 @@ public class UniteLegaleRepositoryTest {
 
     @Autowired
     private UniteLegaleRepository uniteLegaleRepository;
+
+    @Autowired
+    private EtablissementRepository etablissementRepository;
 
     @Test
     public void testFindBySiren() {
@@ -260,6 +263,49 @@ public class UniteLegaleRepositoryTest {
         assertEquals("Test Company 1", result.get(0).getDenomination());
         assertEquals(CategorieJuridique.SA, result.get(0).getCategorieJuridique());
     }
+
+    @Test
+    public void testFindByCategorieJuridiqueWithEtablissements() {
+        // Créer une unité légale
+        UniteLegale uniteLegale1 = new UniteLegale();
+        uniteLegale1.setSiren("123456789");
+        uniteLegale1.setDenomination("Test Company 1");
+        uniteLegale1.setCategorieJuridique(CategorieJuridique.SA);
+        uniteLegaleRepository.save(uniteLegale1);
+
+        // Créer un établissement associé à l'unité légale
+        Etablissement etablissement1 = new Etablissement();
+        etablissement1.setSiret("12345678900001");
+        etablissement1.setNic("00001");
+        etablissement1.setAdresse("1 Rue de Test");
+        etablissement1.setUniteLegale(uniteLegale1);
+        etablissementRepository.save(etablissement1);
+
+        // Créer une deuxième unité légale
+        UniteLegale uniteLegale2 = new UniteLegale();
+        uniteLegale2.setSiren("987654321");
+        uniteLegale2.setDenomination("Test Company 2");
+        uniteLegale2.setCategorieJuridique(CategorieJuridique.SA);
+        uniteLegaleRepository.save(uniteLegale2);
+
+        // Créer un établissement associé à la deuxième unité légale
+        Etablissement etablissement2 = new Etablissement();
+        etablissement2.setSiret("98765432100001");
+        etablissement2.setNic("00001");
+        etablissement2.setAdresse("2 Rue de Test");
+        etablissement2.setUniteLegale(uniteLegale2);
+        etablissementRepository.save(etablissement2);
+
+        // Tester la méthode
+        List<UniteLegale> result = uniteLegaleRepository.findByCategorieJuridiqueWithEtablissements(CategorieJuridique.SA);
+        assertEquals(2, result.size());
+
+        // Vérifier que les établissements sont instanciés et non vides
+        assertNotNull(result.get(0).getEtablissements());
+        assertNotNull(result.get(1).getEtablissements());
+        assertEquals(1, result.get(0).getEtablissements().size());
+        assertEquals(1, result.get(1).getEtablissements().size());
+    }
 }
 ```
 
@@ -281,7 +327,7 @@ public class EtablissementRepositoryTest {
         UniteLegale uniteLegale = new UniteLegale();
         uniteLegale.setSiren("123456789");
         uniteLegale.setDenomination("Test Company");
-        uniteLegale.setCategorieJuridique("SA");
+        uniteLegale.setCategorieJuridique(CategorieJuridique.SA);
         uniteLegaleRepository.save(uniteLegale);
 
         Etablissement etablissement = new Etablissement();
@@ -301,7 +347,7 @@ public class EtablissementRepositoryTest {
         UniteLegale uniteLegale = new UniteLegale();
         uniteLegale.setSiren("123456789");
         uniteLegale.setDenomination("Test Company");
-        uniteLegale.setCategorieJuridique("SA");
+        uniteLegale.setCategorieJuridique(CategorieJuridique.SA);
         uniteLegaleRepository.save(uniteLegale);
 
         Etablissement etablissement1 = new Etablissement();
@@ -320,6 +366,61 @@ public class EtablissementRepositoryTest {
 
         List<Etablissement> result = etablissementRepository.findByUniteLegale(uniteLegale);
         assertEquals(2, result.size());
+    }
+
+    @Test
+    public void testFindByAdresseStartingWith() {
+        UniteLegale uniteLegale = new UniteLegale();
+        uniteLegale.setSiren("123456789");
+        uniteLegale.setDenomination("Test Company");
+        uniteLegale.setCategorieJuridique(CategorieJuridique.SA);
+        uniteLegaleRepository.save(uniteLegale);
+
+        Etablissement etablissement1 = new Etablissement();
+        etablissement1.setSiret("12345678900001");
+        etablissement1.setNic("00001");
+        etablissement1.setAdresse("1 Rue de Test");
+        etablissement1.setUniteLegale(uniteLegale);
+        etablissementRepository.save(etablissement1);
+
+        Etablissement etablissement2 = new Etablissement();
+        etablissement2.setSiret("12345678900002");
+        etablissement2.setNic("00002");
+        etablissement2.setAdresse("2 Rue de Test");
+        etablissement2.setUniteLegale(uniteLegale);
+        etablissementRepository.save(etablissement2);
+
+        List<Etablissement> result = etablissementRepository.findByAdresseStartingWith("1 Rue");
+        assertEquals(1, result.size());
+        assertEquals("1 Rue de Test", result.get(0).getAdresse());
+    }
+
+    @Test
+    public void testFindEtablissementByUniteLegaleProjection() {
+        UniteLegale uniteLegale = new UniteLegale();
+        uniteLegale.setSiren("123456789");
+        uniteLegale.setDenomination("Test Company");
+        uniteLegale.setCategorieJuridique(CategorieJuridique.SA);
+        uniteLegaleRepository.save(uniteLegale);
+
+        Etablissement etablissement1 = new Etablissement();
+        etablissement1.setSiret("12345678900001");
+        etablissement1.setNic("00001");
+        etablissement1.setAdresse("1 Rue de Test");
+        etablissement1.setUniteLegale(uniteLegale);
+        etablissementRepository.save(etablissement1);
+
+        Etablissement etablissement2 = new Etablissement();
+        etablissement2.setSiret("12345678900002");
+        etablissement2.setNic("00002");
+        etablissement2.setAdresse("2 Rue de Test");
+        etablissement2.setUniteLegale(uniteLegale);
+        etablissementRepository.save(etablissement2);
+
+        List<EtablissementProjection> result = etablissementRepository.findEtablissementByUniteLegale(uniteLegale);
+        assertEquals(2, result.size());
+        assertEquals("12345678900001", result.get(0).getSiret());
+        assertEquals("1 Rue de Test", result.get(0).getAdresse());
     }
 }
 ```
