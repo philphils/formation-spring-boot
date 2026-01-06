@@ -18,6 +18,7 @@ Ajoutez les dépendances suivantes dans le `pom.xml` :
     </dependency>
 
     <!-- Base de données H2 (pour le profil dev) -->
+    <!-- (Dans notre projet cette dépendance est déjà présente) --> 
     <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
@@ -32,6 +33,7 @@ Ajoutez les dépendances suivantes dans le `pom.xml` :
     </dependency>
 
     <!-- Spring Boot Starter Test -->
+    <!-- (Dans notre projet cette dépendance est déjà présente) --> 
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-test</artifactId>
@@ -51,9 +53,10 @@ spring.datasource.password=
 spring.datasource.driver-class-name=org.h2.Driver
 spring.h2.console.enabled=true
 spring.h2.console.path=/h2-console
-spring.jpa.show-sql=true
 spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.use_sql_comments=true
 ```
 
 #### `src/main/resources/application-integration.properties` (PostgreSQL)
@@ -62,11 +65,12 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/sirene_db
 spring.datasource.username=postgres
 spring.datasource.password=password
 spring.datasource.driver-class-name=org.postgresql.Driver
-spring.jpa.show-sql=true
+spring.jpa.show-sql=false
 spring.jpa.hibernate.ddl-auto=update
-spring.jpa.properties.hibernate.format_sql=true
-```
 
+# Configuration de la requête de test de connexion
+spring.datasource.hikari.connection-test-query=SELECT 1
+```
 ---
 
 ## Partie 2 : Création des entités JPA
@@ -88,11 +92,13 @@ public enum CategorieJuridique {
 }
 ```
 
-Ensuite, utilisez cette énumération dans l'entité `UniteLegale` :
+Ensuite, utilisez cette énumération dans l'entité `UniteLegale` (utilisez les imports de la norme JPA présent dans le package Jakarta et  non ceux de la librairie propriétaire Hibernate) :
+
 ```java
 @Entity
 @Table(name = "unite_legale")
-@Data
+@Getter
+@Setter
 public class UniteLegale {
 
     @Id
@@ -110,18 +116,30 @@ public class UniteLegale {
     private CategorieJuridique categorieJuridique;
 
     @OneToMany(mappedBy = "uniteLegale", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Etablissement> etablissements;
+    @Setter(value = lombok.AccessLevel.NONE)
+    private Set<Etablissement> etablissements = new HashSet<>();
 
     // Les constructeurs, getters et setters sont générés par Lombok
+
+    // Méthode pour ajouter un établissement à l'unité légale et maintenir la
+    // relation bidirectionnelle
+    public void addEtablissement(Etablissement etablissement) {
+        etablissements.add(etablissement);
+        if (etablissement.getUniteLegale() != this) {
+            etablissement.setUniteLegale(this);
+        }
+    }
 }
 ```
 
 ### 2.2. Entité `Etablissement`
 Créez la classe `Etablissement` dans le package `fr.insee.formation.model` :
+
 ```java
 @Entity
 @Table(name = "etablissement")
-@Data
+@Getter
+@Setter
 public class Etablissement {
 
     @Id
@@ -139,9 +157,18 @@ public class Etablissement {
 
     @ManyToOne
     @JoinColumn(name = "unite_legale_id", nullable = false)
+    @Setter(value = lombok.AccessLevel.NONE)
     private UniteLegale uniteLegale;
 
     // Les constructeurs, getters et setters sont générés par Lombok
+
+    // Méthode pour gérer la relation bidirectionnelle
+    public void setUniteLegale(UniteLegale uniteLegale) {
+        this.uniteLegale = uniteLegale;
+        if (uniteLegale != null && !uniteLegale.getEtablissements().contains(this)) {
+            uniteLegale.addEtablissement(this);
+        }
+    }
 }
 ```
 
@@ -163,7 +190,7 @@ Créez l'interface `EtablissementProjection` dans le package `fr.insee.formation
 Créez l'interface `UniteLegaleRepository` dans le package `fr.insee.formation.repository` :
 - Cette interface doit étendre `JpaRepository<UniteLegale, Long>`.
 - Ajoutez des méthodes par convention de nommage pour rechercher :
-    - des unités légales par `siren`
+    - une unité légale par `siren` (vous pouvez utiliser la classe Optional)
     - des unités légales dont la `denomination` contient une chaîne de caractère
     - des projections DTO des unités légales par `categorieJuridique`.
 - Ajoutez une méthode personnalisée utilisant `@Query` pour récupérer des unités légales par `categorieJuridique` avec leurs établissements instanciés.
@@ -440,6 +467,11 @@ mvn test
 #### 6.2.1. Créer un conteneur PostgreSQL avec Podman
 Avant de lancer l'application avec le profil `integration`, créez un conteneur PostgreSQL avec Podman :
 
+0. **Démarrer votre machine podman** :
+   ```bash
+   podman machine start
+   ```
+
 1. **Créer un conteneur PostgreSQL** :
    ```bash
    podman run --name sirene_db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=sirene_db -p 5432:5432 -d postgres:latest
@@ -455,14 +487,8 @@ Avant de lancer l'application avec le profil `integration`, créez un conteneur 
    a1b2c3d4e5f6  docker.io/library/postgres:latest  postgres -c ...      2 minutes ago  Up 2 minutes ago  0.0.0.0:5432->5432/tcp  sirene_db
    ```
 
-3. **Exécuter le script d'initialisation** :
-   ```bash
-   podman cp init-postgres.sql sirene_db:/tmp/init-postgres.sql
-   podman exec -it sirene_db psql -U postgres -d sirene_db -f /tmp/init-postgres.sql
-   ```
-
 #### 6.2.2. Vérifier la connexion avec DBeaver
-1. **Ouvrir DBeaver** et créer une nouvelle connexion PostgreSQL.
+1. **Ouvrir DBeaver (ou autre outil de gestion de base de données)** et créer une nouvelle connexion PostgreSQL.
 2. **Configurer la connexion** avec les paramètres suivants :
    - **Hôte** : `localhost`
    - **Port** : `5432`
@@ -470,65 +496,8 @@ Avant de lancer l'application avec le profil `integration`, créez un conteneur 
    - **Utilisateur** : `postgres`
    - **Mot de passe** : `password`
 3. **Tester la connexion** en cliquant sur le bouton "Tester la connexion".
-4. **Explorer les tables** pour vérifier que les données ont été correctement insérées.
-
-#### 6.2.3. Lancer l'application avec le profil `integration`
-Une fois le conteneur PostgreSQL en cours d'exécution et les données initialisées, lancez l'application avec le profil `integration` :
-```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=integration
-```
-
-#### 6.2.4. Vérifier la connexion à la base de données avec Actuator
-Une fois l'application démarrée, utilisez l'endpoint Actuator pour vérifier que la base de données est correctement configurée (via la commande curl ou directement dans votre navigateur) :
-```bash
-curl http://localhost:8080/actuator/health
-```
-
-Vous devriez recevoir une réponse similaire à :
-```json
-{
-  "status": "UP",
-  "components": {
-    "db": {
-      "status": "UP",
-      "details": {
-        "database": "PostgreSQL",
-        "result": 1,
-        "validationQuery": "SELECT 1"
-      }
-    },
-    "diskSpace": {
-      "status": "UP",
-      "details": {
-        "total": 250685575168,
-        "free": 123456789012,
-        "threshold": 10485760
-      }
-    },
-    "ping": {
-      "status": "UP"
-    }
-  }
-}
-```
-
-Pour vérifier que les tables sont bien créées et accessibles, vous pouvez également utiliser (via la commande curl ou directement dans votre navigateur) :
-```bash
-curl http://localhost:8080/actuator/health/db
-```
-
-Si vous rencontrez des erreurs, vérifiez les logs de l'application et assurez-vous que le conteneur PostgreSQL est en cours d'exécution et accessible.
-
-
-
-
-
----
-
-## Partie 7 : Script d'initialisation de la base PostgreSQL
-
-### 7.1. Script SQL pour PostgreSQL
-Créez un fichier `init-postgres.sql` à la racine du projet avec le contenu suivant :
+4. **Exécuter le script d'initialisation** pour créer les tables et insérer des données de test.
+Executez le script suivant dans DBeaver pour initialiser la base de données PostgreSQL :
 ```sql
 -- Script d'initialisation pour la base de données PostgreSQL
 -- Ce script crée les tables et insère des données de test
@@ -568,26 +537,59 @@ INSERT INTO etablissement (siret, nic, adresse, unite_legale_id) VALUES
 ('32165498700001', '00001', '6 Rue de Test', 5);
 
 ```
+4. **Explorer les tables** pour vérifier que les données ont été correctement insérées.
 
-### 7.2. Exécuter le script SQL
+#### 6.2.3. Lancer l'application avec le profil `integration`
+Une fois le conteneur PostgreSQL en cours d'exécution et les données initialisées, lancez l'application avec le profil `integration` :
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=integration
+```
 
-Exécuter ce script dans DBeaver pour initialiser la base de données PostgreSQL.
+#### 6.2.4. Vérifier la connexion à la base de données avec Actuator
+Une fois l'application démarrée, utilisez l'endpoint Actuator pour vérifier que la base de données est correctement configurée.
+Ouvrez l'url http://localhost:8080/actuator/health dans votre navigateur ou via la commande curl :
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+Vous devriez recevoir une réponse similaire à :
+```json
+{
+  "status": "UP",
+  "components": {
+    "db": {
+      "status": "UP",
+      "details": {
+        "database": "PostgreSQL",
+        "result": 1,
+        "validationQuery": "SELECT 1",
+        "result": 1
+      }
+    },
+    "diskSpace": {
+      "status": "UP",
+      "details": {
+        "total": 250685575168,
+        "free": 123456789012,
+        "threshold": 10485760,
+        ...
+      }
+    },
+    "ping": {
+      "status": "UP"
+    }
+  }
+}
+```
+
+Si vous rencontrez des erreurs, vérifiez les logs de l'application et assurez-vous que le conteneur PostgreSQL est en cours d'exécution et accessible.
 
 ---
+## Partie 7 : Endpoint de vérification de la base de données
 
-## Partie 8 : Endpoint de vérification de la base de données
-
-### 8.1. Créer un endpoint pour vérifier la base de données
+### 7.1. Créer un endpoint pour vérifier la base de données
 Créez un contrôleur `DatabaseCheckController` dans le package `fr.insee.formation.controller` :
 ```java
-package fr.insee.formation.controller;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import fr.insee.formation.repository.UniteLegaleRepository;
-import fr.insee.formation.repository.EtablissementRepository;
-
 @RestController
 public class DatabaseCheckController {
 
@@ -603,7 +605,7 @@ public class DatabaseCheckController {
         long etablissementCount = etablissementRepository.count();
 
         if (uniteLegaleCount == 5 && etablissementCount == 6) {
-            return "Ok !";
+            return "Ok ! On a bien 5 unités légales et 6 établissements.";
         } else {
             return "Erreur : Nombre de lignes incorrect. UniteLegale: " + uniteLegaleCount + ", Etablissement: " + etablissementCount;
         }
@@ -611,43 +613,25 @@ public class DatabaseCheckController {
 }
 ```
 
-### 8.2. Tester l'endpoint manuellement
-Pour vérifier que l'endpoint fonctionne correctement, vous pouvez utiliser l'une des méthodes suivantes :
+### 7.2. Tester l'endpoint manuellement
+Pour vérifier que l'endpoint fonctionne correctement, visitez http://localhost:8080/check-database (via navigateur ou curl). Vous devriez recevoir la réponse suivante :
 
-#### Méthode 1 : Utiliser `curl`
-Ouvrez un terminal et exécutez la commande suivante :
-```bash
-curl http://localhost:8080/check-database
 ```
-Vous devriez recevoir la réponse suivante :
-```
-Ok !
+Ok ! On a bien 5 unités légales et 6 établissements.
 ```
 
-#### Méthode 2 : Utiliser un navigateur web
-Ouvrez votre navigateur et accédez à l'URL suivante :
-```
-http://localhost:8080/check-database
-```
-Vous devriez voir s'afficher :
-```
-Ok !
-```
+Si vous avez bien ajouté les spring-dev-tools dans votre pom.xml, il n'est pas nécessaire de redémarrer l'application.
 
 ---
 
 ## Résumé du TP4
 À la fin de ce TP, vous devez :
 - Configurer un projet Spring Boot avec Spring Data JPA.
-- Créer des entités `UniteLegale` et `Etablissement`.
 - Implémenter des repositories avec des méthodes personnalisées.
 - Utiliser des projections DTO pour optimiser les requêtes.
 - Configurer et tester avec différentes bases de données (H2 et PostgreSQL).
-- Écrire des tests unitaires pour valider les fonctionnalités.
-- Créer un script SQL pour initialiser la base de données PostgreSQL.
-- Ajouter un endpoint pour vérifier la configuration de la base de données.
-- Vérifier la connexion à la base de données avec Actuator.
-- Utiliser l'endpoint de vérification pour confirmer que les données sont correctement insérées.
+- Vérifier la connexion à la base de données avec l'Actuator.
+- Ajouter un endpoint pour vérifier le contenu de la base de données.
 
 ---
 
