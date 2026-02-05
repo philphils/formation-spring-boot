@@ -75,3 +75,11 @@ public ResponseEntity<StreamingResponseBody> exportCsvStream() {
 | **`ResponseEntity<byte[]>`** | Petits fichiers générés en mémoire 
 | **`ResponseEntity<Resource>`** | Fichiers existants sur le serveur 
 | **`StreamingResponseBody`** | Gros volumes ou données dynamiques
+
+--
+
+# TP5 :  
+
+Spring-Web
+
+![](./img/diapo_formation_spring_boot_12.png)
