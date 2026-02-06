@@ -17,6 +17,8 @@ import fr.insee.formation.model.CategorieJuridique;
 import fr.insee.formation.model.Etablissement;
 import fr.insee.formation.model.UniteLegale;
 
+//@DataJpaTest Permet de construire les beans repository pour les tests
+//et monte une base de données en mémoire H2
 @DataJpaTest
 @ActiveProfiles("dev")
 public class UniteLegaleRepositoryTest {
