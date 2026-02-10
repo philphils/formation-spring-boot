@@ -1,28 +1,124 @@
-# Formation Spring Boot
+# TP5 : Créer une API REST avec Spring Web
 
-## Pré-requis
+## Objectifs
+- Concevoir et implémenter une API REST pour exposer des données SIRENE (unités légales et établissements).
+- Réfléchir au nommage des endpoints et aux verbes HTTP appropriés.
+- Implémenter des fonctionnalités avancées comme la génération de fichiers et les streams.
+- Utiliser Spring Boot Actuator pour monitorer les performances.
+- Tester les endpoints et les fonctionnalités.
 
-Cursus Java de base  
-Formation Spring Initiation (niveau 1) : Injection de dépendance, utilisation des annotations Spring, fonctionnement du contexte d'application, utilisation des properties, profiles...   
-Souhaitable formation Hibernate niveau 1 : les TPs disposeront d'objets directement mappés, nous utiliserons Spring-Data qui est une surcouche du framework Hibernate  
+---
 
-L'installation d'un JDK Java 21 est requis sur le poste  
+## Étapes du TP
 
+### 0. Préparation du projet
+**Vérifiez les dépendances** dans le `pom.xml` :
+- Vérifier la présence du starter `spring-boot-starter-web`.
+- Vérifier la présence du starter `spring-boot-starter-data-jpa`.
+- Vérifier la présence du starter `spring-boot-starter-validation`.
+- Vérifier la présence du starter `spring-boot-starter-actuator`.
 
-## Objectif
+---
 
-Donner les connaissances de base pour utiliser et mettre en oeuvre le framework Spring-Boot.  
-Voici les notions qui devraient être abordés :  
+### 2. Conception des endpoints REST
+Réfléchissez à la conception des endpoints pour gérer les unités légales et les établissements. Voici quelques questions pour vous guider :
+- **Quels verbes HTTP utiliser ?**
+  - `GET` pour récupérer des données.
+  - `POST` pour créer des données.
+  - `PUT` pour mettre à jour des données.
+  - `DELETE` pour supprimer des données.
+- **Comment nommer les endpoints ?**
+  - Exemples :
+    - `/api/unites-legales` pour gérer les unités légales.
+    - `/api/etablissements` pour gérer les établissements.
+    - `/api/unites-legales/{siren}/etablissements` pour récupérer les établissements d'une unité légale.
+- **Comment gérer les erreurs ?**
+  - Utilisez des codes HTTP appropriés (ex : `404` pour une ressource non trouvée).
+  - Retournez des messages d'erreur clairs.
 
-Création et configuration d'un projet avec Spring-Boot (Spring Initializr, les starters, auto-configuration, Spring CLI)  
-Gestion des properties et des profiles  
-Création des endpoints avec Spring Rest  
-Créatin d'un couche de persistence des données avec Spring-Data  
-Gestion de la sécurité avec Spring-Security  
-Apport de Spring-Boot pour les tests  
+---
 
-A la fin des TPs nous devrions avoir produit une mini "API Sirene", avec quelques endpoins, une couche de persistance, et des tests. 
+### 3. Implémentation des endpoints
+Implémentez les endpoints suivants. Utilisez les services et repositories disponibles dans le projet (vous n'avez que les contrôleurs à créer) :
+- **Unité légale** :
+  - Récupérer toutes les unités légales.
+  - Récupérer une unité légale par son SIREN.
+  - Créer une nouvelle unité légale.
+  - Mettre à jour une unité légale.
+  - Supprimer une unité légale.
+- **Établissement** :
+  - Récupérer tous les établissements.
+  - Récupérer un établissement par son SIRET.
+  - Récupérer les établissements d'une unité légale.
 
-## Licence
-Ce dépôt (code et supports de formation) est distribué sous licence [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/deed.fr).
-Vous pouvez réutiliser, modifier et partager librement ce contenu, à condition de mentionner l’auteur.
+---
+
+### 4. Génération de fichiers
+Ajoutez un endpoint pour exporter les données en CSV ou JSON. Réfléchissez à la manière de générer le fichier et de le renvoyer.
+- **Exemple d'endpoint** :
+  - `GET /api/unites-legales/export/csv` pour exporter les unités légales en CSV.
+  - `GET /api/unites-legales/export/json` pour exporter les unités légales en JSON.
+- **Rappel : Utilisez `ResponseEntity`** pour renvoyer le fichier :
+  - `ResponseEntity<byte[]>` pour les fichiers générés en mémoire.
+  - `ResponseEntity<Resource>` pour les fichiers existants (pas ici, mais utile à savoir).
+
+---
+
+### 5. Gestion des gros volumes de données avec `Stream`
+1. **Passez en profil `integration`** :
+   - Utilisez PostgreSQL pour gérer des données volumineuses.
+2. **Chargez le dump dans votre base de données sous Podman** :
+   - Un dump de données vous sera fourni pour simuler un volume important.
+3. **Implémentez un endpoint renvoyant la totalité des unités légales** :
+   - Utilisez la méthode du repository qui renvoie un `Stream`.
+   - Créez un endpoint pour récupérer les données en flux continu.
+   - Utilisez `StreamingResponseBody` pour envoyer les données.
+4. **Comparez les performances** :
+   - Utilisez `GET /api/unites-legales/`.
+   - Utilisez `GET /api/unites-legales/stream`.
+   - Utilisez **Spring Boot Actuator** pour monitorer les performances avec l'URL : `http://localhost:8080/actuator/httptrace`.
+
+---
+
+### 8. Gestion des exceptions
+Créez une classe `GlobalExceptionHandler` pour centraliser la gestion des exceptions.
+- Utilisez `@RestControllerAdvice` pour gérer les exceptions globalement.
+- Retournez des messages d'erreur clairs et des codes HTTP appropriés.
+
+---
+
+### 9. Validation des données
+Ajoutez des validations dans les DTOs pour valider les données envoyées dans les requêtes.
+- Utilisez `@Valid` pour valider les données.
+- Utilisez des annotations comme `@NotNull`, `@Size`, etc.
+- Vérifiez la taille du SIREN et le fait qu'il ne soit pas null pour l'endpoint : `GET /api/unites-legales/{siren}`.
+- Vérifier que vous récupérer le bon code HTTP et le bon message d'erreur en cas de siren invalide.
+
+---
+
+### 10. Tests
+Créez une classe de tests `UniteLegaleControllerTest` unitaires sans serveur embarqué avec `@WebMvcTest` pour tester le contrôleur `UniteLegaleController`.
+- Vérifiez que le endpoint `GET /api/unites-legales/{siren}` renvoie le code HTTP 200 si le SIREN est valide.
+- Vérifiez que vous récupérez l'exception `ResponseStatusException` avec le code HTTP 400 si le SIREN est null, vide ou pas de la bonne taille.
+
+Créez une classe de tests d'intégration `UniteLegaleControllerIntegrationTest` avec `@SpringBootTest`.
+- Créez quelques unités légales en base de données.
+- Tester que vous pouvez les récupérer avec le endpoint `GET /api/unites-legales/stream`.
+
+---
+
+## Livrables
+1. **Contrôleurs** :
+   - `UniteLegaleController` avec les endpoints CRUD et les fonctionnalités de génération de fichiers et de streaming.
+   - `EtablissementController` avec les endpoints CRUD.
+2. **Gestion des exceptions** :
+   - Classe `GlobalExceptionHandler` pour centraliser la gestion des exceptions.
+3. **Validation des données** :
+   - Utilisation de `@Valid` et annotations de validation dans les DTOs.
+4. **Tests** :
+   - Classe `UniteLegaleControllerTest` pour les tests unitaires.
+   - Classe `UniteLegaleControllerIntegrationTest` pour les tests d'intégration.
+
+---
+
+Bonne chance pour ce TP ! Si vous avez des questions, n'hésitez pas à demander.
