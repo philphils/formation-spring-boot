@@ -1,0 +1,59 @@
+diff --git a/formation-spring-boot-project/pom.xml b/formation-spring-boot-project/pom.xml
+index 4d7aadb..a3bd641 100644
+--- a/formation-spring-boot-project/pom.xml
++++ b/formation-spring-boot-project/pom.xml
+@@ -77,6 +77,13 @@
+ 			<scope>runtime</scope>
+ 		</dependency>
+ 
++		<!-- JavaFaker pour générer des données fictives -->
++		<dependency>
++			<groupId>com.github.javafaker</groupId>
++			<artifactId>javafaker</artifactId>
++			<version>1.0.2</version>
++		</dependency>
++
+ 	</dependencies>
+ 
+ 	<build>
+diff --git a/formation-spring-boot-project/src/main/java/fr/insee/formation/model/Etablissement.java b/formation-spring-boot-project/src/main/java/fr/insee/formation/model/Etablissement.java
+index 4013ae2..7b79181 100644
+--- a/formation-spring-boot-project/src/main/java/fr/insee/formation/model/Etablissement.java
++++ b/formation-spring-boot-project/src/main/java/fr/insee/formation/model/Etablissement.java
+@@ -1,5 +1,7 @@
+ package fr.insee.formation.model;
+ 
++import com.fasterxml.jackson.annotation.JsonBackReference;
++
+ import jakarta.persistence.Column;
+ import jakarta.persistence.Entity;
+ import jakarta.persistence.GeneratedValue;
+@@ -32,6 +34,7 @@ public class Etablissement {
+ 
+     @ManyToOne
+     @JoinColumn(name = "unite_legale_id", nullable = false)
++    @JsonBackReference
+     @Setter(value = lombok.AccessLevel.NONE)
+     private UniteLegale uniteLegale;
+ 
+diff --git a/formation-spring-boot-project/src/main/java/fr/insee/formation/model/UniteLegale.java b/formation-spring-boot-project/src/main/java/fr/insee/formation/model/UniteLegale.java
+index cbff31d..a9971c5 100644
+--- a/formation-spring-boot-project/src/main/java/fr/insee/formation/model/UniteLegale.java
++++ b/formation-spring-boot-project/src/main/java/fr/insee/formation/model/UniteLegale.java
+@@ -3,6 +3,8 @@ package fr.insee.formation.model;
+ import java.util.HashSet;
+ import java.util.Set;
+ 
++import com.fasterxml.jackson.annotation.JsonManagedReference;
++
+ import jakarta.persistence.CascadeType;
+ import jakarta.persistence.Column;
+ import jakarta.persistence.Entity;
+@@ -37,6 +39,7 @@ public class UniteLegale {
+     private CategorieJuridique categorieJuridique;
+ 
+     @OneToMany(mappedBy = "uniteLegale", cascade = CascadeType.ALL, orphanRemoval = true)
++    @JsonManagedReference
+     @Setter(value = lombok.AccessLevel.NONE)
+     private Set<Etablissement> etablissements = new HashSet<>();
+ 
