@@ -1,4 +1,4 @@
-package fr.insee.formation.dto;
+package fr.insee.formation.repository.dto;
 
 public interface EtablissementProjection {
     String getSiret();

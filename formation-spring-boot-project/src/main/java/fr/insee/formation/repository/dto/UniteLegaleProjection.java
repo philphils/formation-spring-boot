@@ -1,4 +1,4 @@
-package fr.insee.formation.dto;
+package fr.insee.formation.repository.dto;
 
 import fr.insee.formation.model.CategorieJuridique;
 

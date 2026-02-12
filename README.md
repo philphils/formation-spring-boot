@@ -20,7 +20,7 @@
 
 ---
 
-### 2. Conception des endpoints REST
+### 2. Rappel sur la conception des endpoints REST
 Réfléchissez à la conception des endpoints pour gérer les unités légales et les établissements. Voici quelques questions pour vous guider :
 - **Quels verbes HTTP utiliser ?**
   - `GET` pour récupérer des données.
@@ -31,10 +31,22 @@ Réfléchissez à la conception des endpoints pour gérer les unités légales e
   - Exemples :
     - `/api/unites-legales` pour gérer les unités légales.
     - `/api/etablissements` pour gérer les établissements.
-    - `/api/unites-legales/{siren}/etablissements` pour récupérer les établissements d'une unité légale.
+    - `/api/unites-legales/{id}/etablissements` pour récupérer les établissements d'une unité légale.
 - **Comment gérer les erreurs ?**
   - Utilisez des codes HTTP appropriés (ex : `404` pour une ressource non trouvée).
   - Retournez des messages d'erreur clairs.
+
+#### Codes de retour HTTP courants
+
+| Code | Status | Utilisation | Exemple |
+|------|--------|-------------|---------|
+| **200** | OK | Requête réussie, données retournées | GET, PUT |
+| **201** | Created | Ressource créée avec succès | POST |
+| **204** | No Content | Requête réussie, aucune donnée retournée | DELETE |
+| **400** | Bad Request | Requête malformée (données invalides) | POST avec données erronées |
+| **404** | Not Found | Ressource non trouvée | GET /api/unites-legales/999 |
+| **409** | Conflict | Conflit (ex: SIREN déjà existant) | POST avec doublon |
+| **500** | Server Error | Erreur serveur | Erreur interne |
 
 ---
 
@@ -50,6 +62,42 @@ Implémentez les endpoints suivants. Utilisez les services et repositories dispo
   - Récupérer tous les établissements.
   - Récupérer un établissement par son SIRET.
   - Récupérer les établissements d'une unité légale.
+
+#### Gestion des erreurs avec messages explicites
+
+Pour améliorer l'expérience du client API, utilisez la classe `ErrorResponse` pour retourner des messages d'erreur clairs et structurés :
+
+```java
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ErrorResponse {
+    private int status;
+    private String message;
+}
+```
+
+**Exemple d'utilisation dans un contrôleur** :
+```java
+@GetMapping("/{id}")
+public ResponseEntity<Object> getUniteLegaleById(@PathVariable Long id) {
+    Optional<UniteLegale> unite = uniteLegaleService.findById(id);
+    if (unite.isPresent()) {
+        return ResponseEntity.ok(unite.get());
+    }
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(new ErrorResponse(404, "Aucune unité légale correspondant à l'identifiant: " + id));
+}
+```
+
+**Réponse d'erreur JSON** :
+```json
+{
+  "status": 404,
+  "message": "Aucune unité légale correspondant à l'identifiant: 999"
+}
+```
 
 ---
 
