@@ -5,10 +5,10 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import fr.insee.formation.dto.UniteLegaleProjection;
 import fr.insee.formation.model.CategorieJuridique;
 import fr.insee.formation.model.UniteLegale;
 import fr.insee.formation.repository.UniteLegaleRepository;
+import fr.insee.formation.repository.dto.UniteLegaleProjection;
 import fr.insee.formation.service.UniteLegaleService;
 
 @Service

@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import fr.insee.formation.dto.UniteLegaleProjection;
 import fr.insee.formation.model.CategorieJuridique;
 import fr.insee.formation.model.Etablissement;
 import fr.insee.formation.model.UniteLegale;
+import fr.insee.formation.repository.dto.UniteLegaleProjection;
 
 //@DataJpaTest Permet de construire les beans repository pour les tests
 //et monte une base de données en mémoire H2

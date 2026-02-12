@@ -3,9 +3,9 @@ package fr.insee.formation.service;
 import java.util.List;
 import java.util.Optional;
 
-import fr.insee.formation.dto.UniteLegaleProjection;
 import fr.insee.formation.model.CategorieJuridique;
 import fr.insee.formation.model.UniteLegale;
+import fr.insee.formation.repository.dto.UniteLegaleProjection;
 
 public interface UniteLegaleService {
     
