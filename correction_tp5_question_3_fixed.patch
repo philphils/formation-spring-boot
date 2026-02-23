@@ -1,0 +1,580 @@
+diff --git a/formation-spring-boot-project/pom.xml b/formation-spring-boot-project/pom.xml
+index 4d7aadb..a3bd641 100644
+--- a/formation-spring-boot-project/pom.xml
++++ b/formation-spring-boot-project/pom.xml
+@@ -77,6 +77,13 @@
+ 			<scope>runtime</scope>
+ 		</dependency>
+ 
++		<!-- JavaFaker pour générer des données fictives -->
++		<dependency>
++			<groupId>com.github.javafaker</groupId>
++			<artifactId>javafaker</artifactId>
++			<version>1.0.2</version>
++		</dependency>
++
+ 	</dependencies>
+ 
+ 	<build>
+diff --git a/formation-spring-boot-project/src/main/java/fr/insee/formation/model/Etablissement.java b/formation-spring-boot-project/src/main/java/fr/insee/formation/model/Etablissement.java
+index 4013ae2..7b79181 100644
+--- a/formation-spring-boot-project/src/main/java/fr/insee/formation/model/Etablissement.java
++++ b/formation-spring-boot-project/src/main/java/fr/insee/formation/model/Etablissement.java
+@@ -1,5 +1,7 @@
+ package fr.insee.formation.model;
+ 
++import com.fasterxml.jackson.annotation.JsonBackReference;
++
+ import jakarta.persistence.Column;
+ import jakarta.persistence.Entity;
+ import jakarta.persistence.GeneratedValue;
+@@ -32,6 +34,7 @@ public class Etablissement {
+ 
+     @ManyToOne
+     @JoinColumn(name = "unite_legale_id", nullable = false)
++    @JsonBackReference
+     @Setter(value = lombok.AccessLevel.NONE)
+     private UniteLegale uniteLegale;
+ 
+diff --git a/formation-spring-boot-project/src/main/java/fr/insee/formation/model/UniteLegale.java b/formation-spring-boot-project/src/main/java/fr/insee/formation/model/UniteLegale.java
+index cbff31d..a9971c5 100644
+--- a/formation-spring-boot-project/src/main/java/fr/insee/formation/model/UniteLegale.java
++++ b/formation-spring-boot-project/src/main/java/fr/insee/formation/model/UniteLegale.java
+@@ -3,6 +3,8 @@ package fr.insee.formation.model;
+ import java.util.HashSet;
+ import java.util.Set;
+ 
++import com.fasterxml.jackson.annotation.JsonManagedReference;
++
+ import jakarta.persistence.CascadeType;
+ import jakarta.persistence.Column;
+ import jakarta.persistence.Entity;
+@@ -37,6 +39,7 @@ public class UniteLegale {
+     private CategorieJuridique categorieJuridique;
+ 
+     @OneToMany(mappedBy = "uniteLegale", cascade = CascadeType.ALL, orphanRemoval = true)
++    @JsonManagedReference
+     @Setter(value = lombok.AccessLevel.NONE)
+     private Set<Etablissement> etablissements = new HashSet<>();
+ 
+diff --git a/formation-spring-boot-project/src/main/java/fr/insee/formation/config/SireneDataInitializer.java b/formation-spring-boot-project/src/main/java/fr/insee/formation/config/SireneDataInitializer.java
+new file mode 100644
+index 0000000..02af5c4
+--- /dev/null
++++ b/formation-spring-boot-project/src/main/java/fr/insee/formation/config/SireneDataInitializer.java
+@@ -0,0 +1,149 @@
++package fr.insee.formation.config;
++
++import java.util.HashSet;
++import java.util.Random;
++import java.util.Set;
++
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
++import org.springframework.boot.CommandLineRunner;
++import org.springframework.context.annotation.Profile;
++import org.springframework.stereotype.Component;
++
++import com.github.javafaker.Faker;
++
++import fr.insee.formation.model.CategorieJuridique;
++import fr.insee.formation.model.Etablissement;
++import fr.insee.formation.model.UniteLegale;
++import fr.insee.formation.service.EtablissementService;
++import fr.insee.formation.service.UniteLegaleService;
++
++/**
++ * Initialise les données SIRENE pour le profil de développement.
++ * Cette classe crée automatiquement quelques unités légales et établissements
++ * au démarrage de l'application avec le profil "dev".
++ */
++@Component
++@Profile("dev")
++public class SireneDataInitializer implements CommandLineRunner {
++
++    private static final Logger logger = LoggerFactory.getLogger(SireneDataInitializer.class);
++
++    private final UniteLegaleService uniteLegaleService;
++    private final EtablissementService etablissementService;
++    private final Faker faker = new Faker();
++    private final Random random = new Random();
++
++    private Set<String> generatedSirens = new HashSet<>();
++    private Set<String> generatedSirets = new HashSet<>();
++
++    public SireneDataInitializer(UniteLegaleService uniteLegaleService,
++                                 EtablissementService etablissementService) {
++        this.uniteLegaleService = uniteLegaleService;
++        this.etablissementService = etablissementService;
++    }
++
++    @Override
++    public void run(String... args) throws Exception {
++        try {
++            // Vérifier s'il y a déjà des données
++            if (uniteLegaleService.findAll().isEmpty()) {
++                logger.info("Initialisation des données SIRENE pour le profil dev...");
++                initializeData();
++                logger.info("✓ Données SIRENE initialisées avec succès");
++            } else {
++                logger.info("Les données sont déjà présentes en base de données. Initialisation ignorée.");
++            }
++        } catch (Exception e) {
++            logger.error("Erreur lors de l'initialisation des données SIRENE", e);
++        }
++    }
++
++    private void initializeData() {
++        CategorieJuridique[] categories = CategorieJuridique.values();
++
++        // Créer 5 unités légales
++        for (int i = 1; i <= 5; i++) {
++            UniteLegale uniteLegale = new UniteLegale();
++            uniteLegale.setSiren(generateUniqueSiren());
++            uniteLegale.setDenomination(faker.company().name());
++            uniteLegale.setCategorieJuridique(categories[random.nextInt(categories.length)]);
++
++            UniteLegale savedUnite = uniteLegaleService.save(uniteLegale);
++            logger.debug("Unité légale créée: {} (SIREN: {})", savedUnite.getDenomination(), savedUnite.getSiren());
++
++            // Créer 1-2 établissements pour chaque unité légale
++            int nbEtablissements = random.nextInt(2) + 1; // 1 ou 2
++            for (int j = 0; j < nbEtablissements; j++) {
++                Etablissement etablissement = new Etablissement();
++                etablissement.setSiret(generateUniqueSiret());
++                etablissement.setNic(generateNic());
++                etablissement.setAdresse(faker.address().fullAddress());
++                etablissement.setUniteLegale(savedUnite);
++
++                Etablissement savedEtab = etablissementService.save(etablissement);
++                logger.debug("Établissement créé: {} (SIRET: {})", savedEtab.getAdresse(), savedEtab.getSiret());
++            }
++        }
++
++        logger.info("✓ {} unités légales créées", uniteLegaleService.findAll().size());
++        logger.info("✓ {} établissements créés", etablissementService.findAll().size());
++    }
++
++    /**
++     * Génère un numéro SIREN unique (9 chiffres)
++     * Vérifie l'unicité en base de données et dans la session courante
++     */
++    private String generateUniqueSiren() {
++        String siren;
++        do {
++            siren = generateSiren();
++        } while (generatedSirens.contains(siren) || uniteLegaleService.findBySiren(siren).isPresent());
++
++        generatedSirens.add(siren);
++        return siren;
++    }
++
++    /**
++     * Génère un numéro SIRET unique (14 chiffres = 9 du SIREN + 5 du NIC)
++     * Vérifie l'unicité en base de données et dans la session courante
++     */
++    private String generateUniqueSiret() {
++        String siret;
++        do {
++            siret = generateSiret();
++        } while (generatedSirets.contains(siret) || etablissementService.findBySiret(siret).isPresent());
++
++        generatedSirets.add(siret);
++        return siret;
++    }
++
++    /**
++     * Génère un numéro SIREN fictif (9 chiffres)
++     */
++    private String generateSiren() {
++        StringBuilder siren = new StringBuilder();
++        for (int i = 0; i < 9; i++) {
++            siren.append(random.nextInt(10));
++        }
++        return siren.toString();
++    }
++
++    /**
++     * Génère un numéro SIRET fictif (14 chiffres = 9 du SIREN + 5 du NIC)
++     */
++    private String generateSiret() {
++        return generateSiren() + generateNic();
++    }
++
++    /**
++     * Génère un numéro NIC fictif (5 chiffres)
++     */
++    private String generateNic() {
++        StringBuilder nic = new StringBuilder();
++        for (int i = 0; i < 5; i++) {
++            nic.append(random.nextInt(10));
++        }
++        return nic.toString();
++    }
++}
+diff --git a/formation-spring-boot-project/src/main/java/fr/insee/formation/controller/EtablissementController.java b/formation-spring-boot-project/src/main/java/fr/insee/formation/controller/EtablissementController.java
+new file mode 100644
+index 0000000..d0dd6f2
+--- /dev/null
++++ b/formation-spring-boot-project/src/main/java/fr/insee/formation/controller/EtablissementController.java
+@@ -0,0 +1,136 @@
++package fr.insee.formation.controller;
++
++import java.util.List;
++import java.util.Optional;
++
++import org.springframework.http.HttpStatus;
++import org.springframework.http.ResponseEntity;
++import org.springframework.web.bind.annotation.DeleteMapping;
++import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.PathVariable;
++import org.springframework.web.bind.annotation.PostMapping;
++import org.springframework.web.bind.annotation.PutMapping;
++import org.springframework.web.bind.annotation.RequestBody;
++import org.springframework.web.bind.annotation.RequestMapping;
++import org.springframework.web.bind.annotation.RestController;
++
++import fr.insee.formation.controller.dto.ErrorResponse;
++import fr.insee.formation.model.Etablissement;
++import fr.insee.formation.service.EtablissementService;
++
++@RestController
++@RequestMapping("/api/etablissements")
++public class EtablissementController {
++
++    private static final String ETAB_NOT_FOUND = "Aucun établissement correspondant à l'identifiant: ";
++    private static final String ETAB_NOT_FOUND_SIRET = "Aucun établissement correspondant au SIRET: ";
++
++    private final EtablissementService etablissementService;
++
++    public EtablissementController(EtablissementService etablissementService) {
++        this.etablissementService = etablissementService;
++    }
++
++    /**
++     * Récupère tous les établissements
++     * GET /api/etablissements
++     * @return ResponseEntity avec la liste de tous les établissements (200 OK)
++     */
++    @GetMapping
++    public ResponseEntity<List<Etablissement>> getAllEtablissements() {
++        List<Etablissement> etablissements = etablissementService.findAll();
++        return ResponseEntity.ok(etablissements);
++    }
++
++    /**
++     * Récupère un établissement par son identifiant
++     * GET /api/etablissements/{id}
++     * @param id l'identifiant de l'établissement
++     * @return ResponseEntity avec l'établissement (200 OK) ou 404 NOT FOUND avec message d'erreur
++     */
++    @GetMapping("/{id}")
++    public ResponseEntity<Object> getEtablissementById(@PathVariable Long id) {
++        Optional<Etablissement> etablissement = etablissementService.findById(id);
++        if (etablissement.isPresent()) {
++            return ResponseEntity.ok(etablissement.get());
++        }
++        return ResponseEntity.status(HttpStatus.NOT_FOUND)
++            .body(new ErrorResponse(404, ETAB_NOT_FOUND + id));
++    }
++
++    /**
++     * Récupère un établissement par son SIRET
++     * GET /api/etablissements/siret/{siret}
++     * @param siret le numéro SIRET de l'établissement
++     * @return ResponseEntity avec l'établissement (200 OK) ou 404 NOT FOUND avec message d'erreur
++     */
++    @GetMapping("/siret/{siret}")
++    public ResponseEntity<Object> getEtablissementBySiret(@PathVariable String siret) {
++        Optional<Etablissement> etablissement = etablissementService.findBySiret(siret);
++        if (etablissement.isPresent()) {
++            return ResponseEntity.ok(etablissement.get());
++        }
++        return ResponseEntity.status(HttpStatus.NOT_FOUND)
++            .body(new ErrorResponse(404, ETAB_NOT_FOUND_SIRET + siret));
++    }
++
++
++
++    /**
++     * Crée un nouvel établissement
++     * POST /api/etablissements
++     * @param etablissement l'établissement à créer
++     * @return ResponseEntity avec l'établissement créé (201 CREATED)
++     */
++    @PostMapping
++    public ResponseEntity<Etablissement> createEtablissement(@RequestBody Etablissement etablissement) {
++        Etablissement created = etablissementService.save(etablissement);
++        return ResponseEntity.status(HttpStatus.CREATED).body(created);
++    }
++
++    /**
++     * Met à jour un établissement existant
++     * PUT /api/etablissements/{id}
++     * @param id l'identifiant de l'établissement à mettre à jour
++     * @param etablissement les données mises à jour
++     * @return ResponseEntity avec l'établissement mis à jour (200 OK) ou 404 NOT FOUND avec message d'erreur
++     */
++    @PutMapping("/{id}")
++    public ResponseEntity<Object> updateEtablissement(@PathVariable Long id, @RequestBody Etablissement etablissement) {
++        Optional<Etablissement> existing = etablissementService.findById(id);
++
++        if (existing.isEmpty()) {
++            return ResponseEntity.status(HttpStatus.NOT_FOUND)
++                .body(new ErrorResponse(404, ETAB_NOT_FOUND + id));
++        }
++
++        Etablissement etab = existing.get();
++        etab.setSiret(etablissement.getSiret());
++        etab.setNic(etablissement.getNic());
++        etab.setAdresse(etablissement.getAdresse());
++        etab.setUniteLegale(etablissement.getUniteLegale());
++
++        Etablissement updated = etablissementService.save(etab);
++        return ResponseEntity.ok(updated);
++    }
++
++    /**
++     * Supprime un établissement
++     * DELETE /api/etablissements/{id}
++     * @param id l'identifiant de l'établissement à supprimer
++     * @return ResponseEntity vide (204 NO CONTENT) ou 404 NOT FOUND avec message d'erreur
++     */
++    @DeleteMapping("/{id}")
++    public ResponseEntity<Object> deleteEtablissement(@PathVariable Long id) {
++        Optional<Etablissement> existing = etablissementService.findById(id);
++
++        if (existing.isEmpty()) {
++            return ResponseEntity.status(HttpStatus.NOT_FOUND)
++                .body(new ErrorResponse(404, ETAB_NOT_FOUND + id));
++        }
++
++        etablissementService.deleteById(id);
++        return ResponseEntity.noContent().build();
++    }
++
++}
+diff --git a/formation-spring-boot-project/src/main/java/fr/insee/formation/controller/UniteLegaleController.java b/formation-spring-boot-project/src/main/java/fr/insee/formation/controller/UniteLegaleController.java
+new file mode 100644
+index 0000000..5ba6a98
+--- /dev/null
++++ b/formation-spring-boot-project/src/main/java/fr/insee/formation/controller/UniteLegaleController.java
+@@ -0,0 +1,156 @@
++package fr.insee.formation.controller;
++
++import java.util.List;
++import java.util.Optional;
++
++import org.springframework.http.HttpStatus;
++import org.springframework.http.ResponseEntity;
++import org.springframework.web.bind.annotation.DeleteMapping;
++import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.PathVariable;
++import org.springframework.web.bind.annotation.PostMapping;
++import org.springframework.web.bind.annotation.PutMapping;
++import org.springframework.web.bind.annotation.RequestBody;
++import org.springframework.web.bind.annotation.RequestMapping;
++import org.springframework.web.bind.annotation.RestController;
++
++import fr.insee.formation.controller.dto.ErrorResponse;
++import fr.insee.formation.model.Etablissement;
++import fr.insee.formation.model.UniteLegale;
++import fr.insee.formation.service.EtablissementService;
++import fr.insee.formation.service.UniteLegaleService;
++
++@RestController
++@RequestMapping("/api/unites-legales")
++public class UniteLegaleController {
++
++    private static final String UNITE_NOT_FOUND = "Aucune unité légale correspondant à l'identifiant: ";
++    private static final String UNITE_NOT_FOUND_SIREN = "Aucune unité légale correspondant au SIREN: ";
++
++    private final UniteLegaleService uniteLegaleService;
++    private final EtablissementService etablissementService;
++
++    public UniteLegaleController(UniteLegaleService uniteLegaleService, EtablissementService etablissementService) {
++        this.uniteLegaleService = uniteLegaleService;
++        this.etablissementService = etablissementService;
++    }
++
++    /**
++     * Récupère toutes les unités légales
++     * GET /api/unites-legales
++     * @return ResponseEntity avec la liste de toutes les unités légales (200 OK)
++     */
++    @GetMapping
++    public ResponseEntity<List<UniteLegale>> getAllUnitesList() {
++        List<UniteLegale> unites = uniteLegaleService.findAll();
++        return ResponseEntity.ok(unites);
++    }
++
++    /**
++     * Récupère une unité légale par son identifiant
++     * GET /api/unites-legales/{id}
++     * @param id l'identifiant de l'unité légale
++     * @return ResponseEntity avec l'unité légale (200 OK) ou 404 NOT FOUND avec message d'erreur
++     */
++    @GetMapping("/{id}")
++    public ResponseEntity<Object> getUniteLegaleById(@PathVariable Long id) {
++        Optional<UniteLegale> unite = uniteLegaleService.findById(id);
++        if (unite.isPresent()) {
++            return ResponseEntity.ok(unite.get());
++        }
++        return ResponseEntity.status(HttpStatus.NOT_FOUND)
++            .body(new ErrorResponse(404, UNITE_NOT_FOUND + id));
++    }
++
++    /**
++     * Récupère une unité légale par son SIREN
++     * GET /api/unites-legales/siren/{siren}
++     * @param siret le numéro SIREN de l'unité légale
++     * @return ResponseEntity avec l'unité légale (200 OK) ou 404 NOT FOUND avec message d'erreur
++     */
++    @GetMapping("/siren/{siren}")
++    public ResponseEntity<Object> getUniteLegaleBySiret(@PathVariable String siren) {
++        Optional<UniteLegale> unite = uniteLegaleService.findBySiren(siren);
++        if (unite.isPresent()) {
++            return ResponseEntity.ok(unite.get());
++        }
++        return ResponseEntity.status(HttpStatus.NOT_FOUND)
++            .body(new ErrorResponse(404, UNITE_NOT_FOUND_SIREN + siren));
++    }
++
++    /**
++     * Crée une nouvelle unité légale
++     * POST /api/unites-legales
++     * @param uniteLegale l'unité légale à créer
++     * @return ResponseEntity avec l'unité légale créée (201 CREATED)
++     */
++    @PostMapping
++    public ResponseEntity<UniteLegale> createUniteLegale(@RequestBody UniteLegale uniteLegale) {
++        UniteLegale created = uniteLegaleService.save(uniteLegale);
++        return ResponseEntity.status(HttpStatus.CREATED).body(created);
++    }
++
++    /**
++     * Met à jour une unité légale existante
++     * PUT /api/unites-legales/{id}
++     * @param id l'identifiant de l'unité légale à mettre à jour
++     * @param uniteLegale les données mises à jour
++     * @return ResponseEntity avec l'unité légale mise à jour (200 OK) ou 404 NOT FOUND avec message d'erreur
++     */
++    @PutMapping("/{id}")
++    public ResponseEntity<Object> updateUniteLegale(@PathVariable Long id, @RequestBody UniteLegale uniteLegale) {
++        Optional<UniteLegale> existing = uniteLegaleService.findById(id);
++
++        if (existing.isEmpty()) {
++            return ResponseEntity.status(HttpStatus.NOT_FOUND)
++                .body(new ErrorResponse(404, UNITE_NOT_FOUND + id));
++        }
++
++        UniteLegale unite = existing.get();
++        unite.setSiren(uniteLegale.getSiren());
++        unite.setDenomination(uniteLegale.getDenomination());
++        unite.setCategorieJuridique(uniteLegale.getCategorieJuridique());
++
++        UniteLegale updated = uniteLegaleService.save(unite);
++        return ResponseEntity.ok(updated);
++    }
++
++    /**
++     * Supprime une unité légale
++     * DELETE /api/unites-legales/{id}
++     * @param id l'identifiant de l'unité légale à supprimer
++     * @return ResponseEntity vide (204 NO CONTENT) ou 404 NOT FOUND avec message d'erreur
++     */
++    @DeleteMapping("/{id}")
++    public ResponseEntity<Object> deleteUniteLegale(@PathVariable Long id) {
++        Optional<UniteLegale> existing = uniteLegaleService.findById(id);
++
++        if (existing.isEmpty()) {
++            return ResponseEntity.status(HttpStatus.NOT_FOUND)
++                .body(new ErrorResponse(404, UNITE_NOT_FOUND + id));
++        }
++
++        uniteLegaleService.deleteById(id);
++        return ResponseEntity.noContent().build();
++    }
++
++    /**
++     * Récupère les établissements d'une unité légale
++     * GET /api/unites-legales/{uniteLegaleId}/etablissements
++     * @param uniteLegaleId l'identifiant de l'unité légale
++     * @return ResponseEntity avec la liste des établissements (200 OK) ou 404 NOT FOUND si l'unité légale n'existe pas
++     */
++    @GetMapping("/{uniteLegaleId}/etablissements")
++    public ResponseEntity<Object> getEtablissementsByUniteLegale(@PathVariable Long uniteLegaleId) {
++        Optional<UniteLegale> uniteLegale = uniteLegaleService.findById(uniteLegaleId);
++
++        if (uniteLegale.isEmpty()) {
++            return ResponseEntity.status(HttpStatus.NOT_FOUND)
++                .body(new ErrorResponse(404, UNITE_NOT_FOUND + uniteLegaleId));
++        }
++
++        List<Etablissement> etablissements = etablissementService.findByUniteLegale(uniteLegale.get());
++        return ResponseEntity.ok(etablissements);
++    }
++
++}
+diff --git a/formation-spring-boot-project/src/main/java/fr/insee/formation/controller/dto/ErrorResponse.java b/formation-spring-boot-project/src/main/java/fr/insee/formation/controller/dto/ErrorResponse.java
+new file mode 100644
+index 0000000..5da4a09
+--- /dev/null
++++ b/formation-spring-boot-project/src/main/java/fr/insee/formation/controller/dto/ErrorResponse.java
+@@ -0,0 +1,15 @@
++package fr.insee.formation.controller.dto;
++
++import lombok.AllArgsConstructor;
++import lombok.Getter;
++import lombok.NoArgsConstructor;
++import lombok.Setter;
++
++@Getter
++@Setter
++@NoArgsConstructor
++@AllArgsConstructor
++public class ErrorResponse {
++    private int status;
++    private String message;
++}
+diff --git a/formation-spring-boot-project/src/main/java/fr/insee/formation/model/Etablissement.java b/formation-spring-boot-project/src/main/java/fr/insee/formation/model/Etablissement.java
+index 4013ae2..7b79181 100644
+--- a/formation-spring-boot-project/src/main/java/fr/insee/formation/model/Etablissement.java
++++ b/formation-spring-boot-project/src/main/java/fr/insee/formation/model/Etablissement.java
+@@ -1,5 +1,7 @@
+ package fr.insee.formation.model;
+ 
++import com.fasterxml.jackson.annotation.JsonBackReference;
++
+ import jakarta.persistence.Column;
+ import jakarta.persistence.Entity;
+ import jakarta.persistence.GeneratedValue;
+@@ -32,6 +34,7 @@ public class Etablissement {
+ 
+     @ManyToOne
+     @JoinColumn(name = "unite_legale_id", nullable = false)
++    @JsonBackReference
+     @Setter(value = lombok.AccessLevel.NONE)
+     private UniteLegale uniteLegale;
+ 
+diff --git a/formation-spring-boot-project/src/main/java/fr/insee/formation/model/UniteLegale.java b/formation-spring-boot-project/src/main/java/fr/insee/formation/model/UniteLegale.java
+index cbff31d..a9971c5 100644
+--- a/formation-spring-boot-project/src/main/java/fr/insee/formation/model/UniteLegale.java
++++ b/formation-spring-boot-project/src/main/java/fr/insee/formation/model/UniteLegale.java
+@@ -3,6 +3,8 @@ package fr.insee.formation.model;
+ import java.util.HashSet;
+ import java.util.Set;
+ 
++import com.fasterxml.jackson.annotation.JsonManagedReference;
++
+ import jakarta.persistence.CascadeType;
+ import jakarta.persistence.Column;
+ import jakarta.persistence.Entity;
+@@ -37,6 +39,7 @@ public class UniteLegale {
+     private CategorieJuridique categorieJuridique;
+ 
+     @OneToMany(mappedBy = "uniteLegale", cascade = CascadeType.ALL, orphanRemoval = true)
++    @JsonManagedReference
+     @Setter(value = lombok.AccessLevel.NONE)
+     private Set<Etablissement> etablissements = new HashSet<>();
+ 
