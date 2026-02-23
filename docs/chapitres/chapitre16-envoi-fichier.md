@@ -12,15 +12,52 @@
 ```java
 @GetMapping("/export")
 public ResponseEntity<byte[]> exportCsv() {
+    // 1. Génération du contenu
     String csvContent = "name,email\nJohn,john@example.com";
-    byte[] csvBytes = csvContent.getBytes();
 
+    // 2. Conversion en bytes (UTF-8)
+    byte[] csvBytes = csvContent.getBytes(StandardCharsets.UTF_8);
+
+    // 3. Configuration des en-têtes
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.TEXT_PLAIN);
+    headers.setContentDisposition(ContentDisposition.builder("attachment")
+        .filename("users.csv")
+        .build());
+
+    // 4. Retour de la réponse
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=users.csv")
-        .contentType(MediaType.parseMediaType("text/csv"))
+        .headers(headers)
         .body(csvBytes);
 }
 ```
+
+--
+
+### Étapes pour l'envoi de fichiers
+
+1. **Génération du contenu**
+   ```java
+   String csvContent = "name,email\nJohn,john@example.com";
+   ```
+
+2. **Conversion en bytes (UTF-8)**
+   ```java
+   byte[] csvBytes = csvContent.getBytes(StandardCharsets.UTF_8);
+   ```
+
+3. **Configuration des en-têtes**
+   ```java
+   HttpHeaders headers = new HttpHeaders();
+   headers.setContentType(MediaType.TEXT_PLAIN);
+   headers.setContentDisposition(ContentDisposition.builder("attachment")
+       .filename("data.csv").build());
+   ```
+
+4. **Retour de la réponse**
+   ```java
+   return ResponseEntity.ok().headers(headers).body(csvBytes);
+   ```
 
 --
 
@@ -32,12 +69,20 @@ public ResponseEntity<byte[]> exportCsv() {
 ```java
 @GetMapping("/download")
 public ResponseEntity<Resource> downloadFile() {
+    // 1. Récupération du fichier
     Path filePath = Paths.get("chemin/vers/fichier.csv");
     Resource resource = new FileSystemResource(filePath);
 
+    // 3. Configuration des en-têtes
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.TEXT_PLAIN);
+    headers.setContentDisposition(ContentDisposition.builder("attachment")
+        .filename(resource.getFilename())
+        .build());
+
+    // 4. Retour de la réponse
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + resource.getFilename())
-        .contentType(MediaType.parseMediaType("text/csv"))
+        .headers(headers)
         .body(resource);
 }
 ```
@@ -52,16 +97,26 @@ public ResponseEntity<Resource> downloadFile() {
 ```java
 @GetMapping("/export-stream")
 public ResponseEntity<StreamingResponseBody> exportCsvStream() {
+    // 1. Génération du contenu via un flux
     StreamingResponseBody stream = response -> {
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(response))) {
-            writer.write("name,email\n");//En-tête
-            //Envoi des données du Stream vers le Writer
-            stream.forEach(obj -> writer.write(obj.toString()));
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(response, StandardCharsets.UTF_8))) {
+            writer.write("name,email\n"); // En-tête
+            // Exemple : Envoi des données du flux vers le Writer
+            List<String> data = Arrays.asList("John,john@example.com", "Jane,jane@example.com");
+            data.forEach(line -> writer.write(line + "\n"));
         }
     };
+
+    // 3. Configuration des en-têtes
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.TEXT_PLAIN);
+    headers.setContentDisposition(ContentDisposition.builder("attachment")
+        .filename("users.csv")
+        .build());
+
+    // 4. Retour de la réponse
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=users.csv")
-        .contentType(MediaType.parseMediaType("text/csv"))
+        .headers(headers)
         .body(stream);
 }
 ```
