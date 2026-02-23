@@ -13,7 +13,7 @@ import fr.insee.formation.service.UniteLegaleService;
 
 @Service
 public class UniteLegaleServiceImpl implements UniteLegaleService {
-    
+
     private final UniteLegaleRepository uniteLegaleRepository;
 
     public UniteLegaleServiceImpl(UniteLegaleRepository uniteLegaleRepository) {
@@ -53,6 +53,22 @@ public class UniteLegaleServiceImpl implements UniteLegaleService {
     @Override
     public void deleteById(Long id) {
         uniteLegaleRepository.deleteById(id);
+    }
+
+    @Override
+    public String generateCsv(List<UniteLegale> unitesLegales) {
+        StringBuilder csv = new StringBuilder();
+        csv.append("ID,SIREN,Dénomination,Catégorie Juridique\n");
+
+        for (UniteLegale unite : unitesLegales) {
+            csv.append(String.format("%d,%s,%s,%s\n",
+                    unite.getId(),
+                    unite.getSiren(),
+                    unite.getDenomination(),
+                    unite.getCategorieJuridique()));
+        }
+
+        return csv.toString();
     }
 
 }

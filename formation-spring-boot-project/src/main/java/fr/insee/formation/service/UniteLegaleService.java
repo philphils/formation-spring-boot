@@ -55,5 +55,12 @@ public interface UniteLegaleService {
      * @param id l'identifiant de l'unité légale à supprimer
      */
     void deleteById(Long id);
+
+    /**
+     * Génère un fichier CSV à partir d'une liste d'unités légales
+     * @param unitesLegales la liste des unités légales
+     * @return le contenu du fichier CSV
+     */
+    String generateCsv(List<UniteLegale> unitesLegales);
     
 }

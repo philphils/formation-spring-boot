@@ -47,5 +47,7 @@ public interface EtablissementService {
      * @param id l'identifiant de l'établissement à supprimer
      */
     void deleteById(Long id);
+
+    String generateCsv(List<Etablissement> etablissements);
     
 }

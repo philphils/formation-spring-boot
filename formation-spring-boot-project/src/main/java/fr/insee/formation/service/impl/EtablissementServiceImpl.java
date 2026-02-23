@@ -12,7 +12,7 @@ import fr.insee.formation.service.EtablissementService;
 
 @Service
 public class EtablissementServiceImpl implements EtablissementService {
-    
+
     private final EtablissementRepository etablissementRepository;
 
     public EtablissementServiceImpl(EtablissementRepository etablissementRepository) {
@@ -47,6 +47,23 @@ public class EtablissementServiceImpl implements EtablissementService {
     @Override
     public void deleteById(Long id) {
         etablissementRepository.deleteById(id);
+    }
+
+    @Override
+    public String generateCsv(List<Etablissement> etablissements) {
+        StringBuilder csv = new StringBuilder();
+        csv.append("ID,SIRET,NIC,Adresse,Unité Légale ID\n");
+
+        for (Etablissement etab : etablissements) {
+            csv.append(String.format("%d,%s,%s,%s,%d\n",
+                    etab.getId(),
+                    etab.getSiret(),
+                    etab.getNic(),
+                    etab.getAdresse(),
+                    etab.getUniteLegale().getId()));
+        }
+
+        return csv.toString();
     }
 
 }
