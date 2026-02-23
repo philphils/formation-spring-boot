@@ -118,6 +118,8 @@ Ajoutez un endpoint pour exporter les données en CSV ou JSON. Réfléchissez à
   - `ResponseEntity<byte[]>` pour les fichiers générés en mémoire.
   - `ResponseEntity<Resource>` pour les fichiers existants (pas ici, mais utile à savoir).
 
+- **Indications pour la génération de fichiers** : Utiliser les méthodes generateCsv des classes de services pour générer le fichier CSV.
+
 ---
 
 ### 5. Gestion des gros volumes de données avec `Stream`
