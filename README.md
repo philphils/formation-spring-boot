@@ -63,6 +63,8 @@ Implémentez les endpoints suivants. Utilisez les services et repositories dispo
   - Récupérer un établissement par son SIRET.
   - Récupérer les établissements d'une unité légale.
 
+Note : Pour spécifier les informations renvoyés nous vous invitons pour plus de simplicité à utiliser les annotations Jackson (@JsonIgnore, @JsonInclude, @JsonManagedReference, etc.). Mais vous pouvez aussi créer des DTOs.
+
 #### Gestion des erreurs avec messages explicites
 
 Pour améliorer l'expérience du client API, utilisez la classe `ErrorResponse` pour retourner des messages d'erreur clairs et structurés :
@@ -98,6 +100,12 @@ public ResponseEntity<Object> getUniteLegaleById(@PathVariable Long id) {
   "message": "Aucune unité légale correspondant à l'identifiant: 999"
 }
 ```
+
+#### Tester votre API
+
+- Démarrer votre application avec le profil `dev` (avec le Spring Boot Dashboard ou bien avec la commande `mvn spring-boot:run -Dspring-boot.run.profiles=dev`).
+- Le composant SireneDataDevInitializer va charger des données de test en base de données mémoire (H2)
+- Avec Postman ou l'outil de votre choix, tester les endpoints que vous avez implémentés (lecture des ULs, modification, suppression, lecture des établissements, etc.).
 
 ---
 

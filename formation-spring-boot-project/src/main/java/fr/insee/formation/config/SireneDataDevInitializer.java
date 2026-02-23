@@ -25,9 +25,9 @@ import fr.insee.formation.service.UniteLegaleService;
  */
 @Component
 @Profile("dev")
-public class SireneDataInitializer implements CommandLineRunner {
+public class SireneDataDevInitializer implements CommandLineRunner {
 
-    private static final Logger logger = LoggerFactory.getLogger(SireneDataInitializer.class);
+    private static final Logger logger = LoggerFactory.getLogger(SireneDataDevInitializer.class);
 
     private final UniteLegaleService uniteLegaleService;
     private final EtablissementService etablissementService;
@@ -37,7 +37,7 @@ public class SireneDataInitializer implements CommandLineRunner {
     private Set<String> generatedSirens = new HashSet<>();
     private Set<String> generatedSirets = new HashSet<>();
 
-    public SireneDataInitializer(UniteLegaleService uniteLegaleService,
+    public SireneDataDevInitializer(UniteLegaleService uniteLegaleService,
                                  EtablissementService etablissementService) {
         this.uniteLegaleService = uniteLegaleService;
         this.etablissementService = etablissementService;
