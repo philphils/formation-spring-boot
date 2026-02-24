@@ -128,8 +128,8 @@ Ajoutez un endpoint pour exporter les données en CSV ou JSON. Réfléchissez à
 2. **Chargez le dump dans votre base de données sous Podman** :
    - Placer vous dans le répertoire racine du projet et exécutez la commande suivante :
   ```bash
-    # Charge un dump PostgreSQL au format "directory" en parallèle sur 4 threads
-    pg_restore -U postgres -d sirene_db -j 4 -F directory ./src/main/resources/dumps/tp_5_integration_data.dump
+  # Charge un dump PostgreSQL au format "directory" en parallèle sur 4 threads
+  pg_restore -U postgres -d sirene_db -j 4 -F directory ./src/main/resources/dumps/tp_5_integration_data.dump
   ```
 3. **Implémentez un endpoint renvoyant la totalité des unités légales** :
    - Utilisez la méthode de service qui renvoie un `Stream` contenant les unités légales.
