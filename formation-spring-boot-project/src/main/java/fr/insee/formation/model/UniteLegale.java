@@ -2,6 +2,9 @@ package fr.insee.formation.model;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -12,6 +15,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +27,8 @@ import lombok.Setter;
 public class UniteLegale {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "unite_seq")
+    @SequenceGenerator(name = "unite_seq", sequenceName = "unite_seq", allocationSize = 50)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -37,6 +42,7 @@ public class UniteLegale {
     private CategorieJuridique categorieJuridique;
 
     @OneToMany(mappedBy = "uniteLegale", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     @Setter(value = lombok.AccessLevel.NONE)
     private Set<Etablissement> etablissements = new HashSet<>();
 
@@ -50,4 +56,5 @@ public class UniteLegale {
             etablissement.setUniteLegale(this);
         }
     }
+
 }
