@@ -126,15 +126,21 @@ Ajoutez un endpoint pour exporter les données en CSV ou JSON. Réfléchissez à
 1. **Passez en profil `integration`** :
    - Utilisez PostgreSQL pour gérer des données volumineuses.
 2. **Chargez le dump dans votre base de données sous Podman** :
-   - Un dump de données vous sera fourni pour simuler un volume important.
+   - Placer vous dans le répertoire racine du projet et exécutez la commande suivante :
+  ```bash
+    # Charge un dump PostgreSQL au format "directory" en parallèle sur 4 threads
+    pg_restore -U postgres -d sirene_db -j 4 -F directory ./src/main/resources/dumps/tp_5_integration_data.dump
+  ```
 3. **Implémentez un endpoint renvoyant la totalité des unités légales** :
-   - Utilisez la méthode du repository qui renvoie un `Stream`.
+   - Utilisez la méthode de service qui renvoie un `Stream` contenant les unités légales.
    - Créez un endpoint pour récupérer les données en flux continu.
    - Utilisez `StreamingResponseBody` pour envoyer les données.
-4. **Comparez les performances** :
-   - Utilisez `GET /api/unites-legales/`.
-   - Utilisez `GET /api/unites-legales/stream`.
-   - Utilisez **Spring Boot Actuator** pour monitorer les performances avec l'URL : `http://localhost:8080/actuator/httptrace`.
+   - Attention pour avoir un affichage au fur et à mesure dans le navigateur ne définissez pas de ``ContentDisposition`` mais renvoyer les données avec un ``Content-Type`` de ``text/plain``.
+4. **Comparez les endpoints** :
+   - Au sein de votre navigateur afficher les urls suivantes :
+   - `GET /api/unites-legales/export/csv`.
+   - `GET /api/unites-legales/stream`.
+   - Remarque : le stream permet de récupérer les données au fur et à mesure de leur génération, pour des volumes de données très importants cette technique permet aussi d'éviter de saturer la mémoire.
 
 ---
 
