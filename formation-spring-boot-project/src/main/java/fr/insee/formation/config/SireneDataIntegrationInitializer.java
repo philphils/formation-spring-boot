@@ -121,8 +121,7 @@ public class SireneDataIntegrationInitializer implements CommandLineRunner {
         Etablissement etab = new Etablissement();
         etab.setSiret(generateUniqueSiret(uniteLegale.getSiren()));
         etab.setNic(generateNic());
-        // etab.setAdresse(faker.address().fullAddress());
-        etab.setAdresse("Toutjours la meme adresse");
+        etab.setAdresse(faker.address().fullAddress());
         return etab;
     }
 
