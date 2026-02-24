@@ -140,7 +140,7 @@ Ajoutez un endpoint pour exporter les données en CSV ou JSON. Réfléchissez à
    - Au sein de votre navigateur afficher les urls suivantes :
    - `GET /api/unites-legales/export/csv`.
    - `GET /api/unites-legales/stream`.
-   - Remarque : le stream permet de récupérer les données au fur et à mesure de leur génération, pour des volumes de données très importants cette technique permet aussi d'éviter de saturer la mémoire.
+   - Remarque : le stream permet de récupérer les données au fur et à mesure de leur génération, pour des volumes de données très importants cette technique permet aussi d'éviter de saturer la mémoire et d'éviter une éventuelle ``OutOfMemoryError``.
 
 ---
 
