@@ -2,8 +2,10 @@ package fr.insee.formation.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fr.insee.formation.model.CategorieJuridique;
 import fr.insee.formation.model.UniteLegale;
@@ -69,6 +71,12 @@ public class UniteLegaleServiceImpl implements UniteLegaleService {
         }
 
         return csv.toString();
+    }
+
+    @Override
+    @Transactional
+    public Stream<UniteLegale> streamAllUnitesLegales() {
+        return uniteLegaleRepository.streamAllBy();
     }
 
 }

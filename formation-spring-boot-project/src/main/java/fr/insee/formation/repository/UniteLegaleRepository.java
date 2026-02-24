@@ -2,6 +2,7 @@ package fr.insee.formation.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,8 @@ public interface UniteLegaleRepository extends JpaRepository<UniteLegale, Long> 
 
     @Query("SELECT ul FROM UniteLegale ul LEFT JOIN FETCH ul.etablissements WHERE ul.categorieJuridique = :categorieJuridique")
     public List<UniteLegale> findByCategorieJuridiqueWithEtablissements(@Param("categorieJuridique") CategorieJuridique categorieJuridique);
+
+    @Query("SELECT u FROM UniteLegale u")
+    Stream<UniteLegale> streamAllBy();
+
 }
