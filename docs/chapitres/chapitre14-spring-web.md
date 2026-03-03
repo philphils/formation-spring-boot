@@ -57,12 +57,24 @@ public class UserController {
 ## Le Controller REST : explications
 
 - **Annotations clés** :
-  - `@RequestMapping` : Définit le chemin de base pour les requêtes.
-  - `@GetMapping` : Spécialise `@RequestMapping` pour les requêtes avec le verbe GET.
+  - `@RequestMapping` : Définit le préfixe pour tous les endpoints du contrôleur.
+  - `@GetMapping` : Spécialise `@RequestMapping` pour les requêtes avec le verbe GET
   - `@PostMapping`, `@PutMapping`, `@DeleteMapping`... : Autres méthodes HTTP disponibles.
+  - Ces annotations peuvent éventuellement compléter le chemin de l'URL. Ex :
+    ```java
+    // Définition du endpoint /api/users/stats
+    @GetMapping("/stats")
+    public List<User> stats() {
+    ...
+    ```
 
+--
+
+## Le Controller REST : explications
 - **Conversion automatique en JSON** :
-  - Spring convertit automatiquement les objets Java en JSON grâce à Jackson.
+  - Spring convertit automatiquement les objets Java en JSON grâce à la librairie Jackson
+  - Pas besoin de sérialiser manuellement.
+  - Nous aborderons plus loin la configuration de Jackson.
   
 --
 
