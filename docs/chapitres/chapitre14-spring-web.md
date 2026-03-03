@@ -108,7 +108,9 @@ public class UserController {
 
     - GET /api/users?role=admin → @RequestParam String role
 
+- **@RequestBody** : Pour les données envoyées dans le corps de la requête (POST, PUT).
 
+    - POST /api/users → la requête contient un JSON qui sera converti en objet User.
 --
 
 # La réponse : ResponseEntity
