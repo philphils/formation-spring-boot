@@ -108,9 +108,19 @@ public class UserController {
 
     - GET /api/users?role=admin → @RequestParam String role
 
+
+--
+# Capturer les paramètres
+
 - **@RequestBody** : Pour les données envoyées dans le corps de la requête (POST, PUT).
 
-    - POST /api/users → la requête contient un JSON qui sera converti en objet User.
+    - POST /api/users → la requête contient un JSON qui sera converti en objet :
+    ```java
+    @PostMapping
+    public User create(@RequestBody User user) {
+        return userService.save(user);
+    }
+    ```
 --
 
 # La réponse : ResponseEntity
