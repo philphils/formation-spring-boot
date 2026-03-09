@@ -145,10 +145,19 @@ Ajoutez un endpoint `GET /api/unites-legales/export/csv` pour exporter l'ensembl
 
 ---
 
-### 8. Gestion des exceptions
-Créez une classe `GlobalExceptionHandler` pour centraliser la gestion des exceptions.
-- Utilisez `@RestControllerAdvice` pour gérer les exceptions globalement.
-- Retournez des messages d'erreur clairs et des codes HTTP appropriés.
+### 6. Gestion des exceptions
+
+- Laisser votre serveur actif avec le profil intégration.
+- Arrêter votre conteneur de base de données.
+- Tester votre endpoint ``/api/unites-legales/stream`` avec l'outil de votre choix.
+- Le message qui s'affiche vous semble-t-il approprié ? Quels problèmes l'affichage d'un tel message pose-t-il ?
+
+Nous allons mettre en place une gestion des exceptions pour afficher un message plus explicite et éviter de donner des informations sensibles à l'utilisateur.
+- Créez une classe `GlobalExceptionHandler` pour centraliser la gestion des exceptions (Utilisez `@RestControllerAdvice`).
+- Ecrivez une première méthode pour gérer les exceptions globalement.
+- Configurer un message par défaut pour les exceptions et logger le contenu de l'exception.
+- Tester toujours avec la base de données arrêtée.
+- **Indication :** Penser à réutiliser la classe `ErrorResponse` pour structurer la réponse d'erreur.
 
 ---
 
