@@ -34,7 +34,7 @@ Réfléchissez à la conception des endpoints pour gérer les unités légales e
     - `/api/unites-legales/{id}/etablissements` pour récupérer les établissements d'une unité légale.
 - **Comment gérer les erreurs ?**
   - Utilisez des codes HTTP appropriés (ex : `404` pour une ressource non trouvée).
-  - Retournez des messages d'erreur clairs.
+  - Retournez des messages d'erreur clairs mais sans donner d'informations critiques.
 
 #### Codes de retour HTTP courants
 
@@ -67,7 +67,7 @@ Note : Pour spécifier les informations renvoyés nous vous invitons pour plus d
 
 #### Gestion des erreurs avec messages explicites
 
-Pour améliorer l'expérience du client API, utilisez la classe `ErrorResponse` pour retourner des messages d'erreur clairs et structurés :
+Pour améliorer l'expérience du client API, utilisez la classe `ErrorResponse` pour retourner des messages d'erreur clairs, structurés et dont vous contrôlez le contenu :
 
 ```java
 @Getter
@@ -108,39 +108,41 @@ public ResponseEntity<Object> getUniteLegaleById(@PathVariable Long id) {
 - Avec Postman ou l'outil de votre choix, tester les endpoints que vous avez implémentés (lecture des ULs, modification, suppression, lecture des établissements, etc.).
 
 ---
-
+// TODO : relecture et reformulation de la partie suivanteS
 ### 4. Génération de fichiers
-Ajoutez un endpoint pour exporter les données en CSV ou JSON. Réfléchissez à la manière de générer le fichier et de le renvoyer.
-- **Exemple d'endpoint** :
-  - `GET /api/unites-legales/export/csv` pour exporter les unités légales en CSV.
-  - `GET /api/unites-legales/export/json` pour exporter les unités légales en JSON.
+Ajoutez un endpoint `GET /api/unites-legales/export/csv` pour exporter l'ensemble des unités légales.
+
+- **Indications pour la génération de fichiers** : Utiliser les méthodes generateCsv des classes de services pour générer le fichier CSV.
+
 - **Rappel : Utilisez `ResponseEntity`** pour renvoyer le fichier :
   - `ResponseEntity<byte[]>` pour les fichiers générés en mémoire.
   - `ResponseEntity<Resource>` pour les fichiers existants (pas ici, mais utile à savoir).
 
-- **Indications pour la génération de fichiers** : Utiliser les méthodes generateCsv des classes de services pour générer le fichier CSV.
-
 ---
 
 ### 5. Gestion des gros volumes de données avec `Stream`
-1. **Passez en profil `integration`** :
-   - Utilisez PostgreSQL pour gérer des données volumineuses.
-2. **Chargez le dump dans votre base de données sous Podman** :
+1. **Chargez le dump dans votre base de données sous Podman** :
    - Placer vous dans le répertoire racine du projet et exécutez la commande suivante :
   ```bash
   # Charge un dump PostgreSQL au format "directory" en parallèle sur 4 threads
   pg_restore -U postgres -d sirene_db -j 4 -F directory ./src/main/resources/dumps/tp_5_integration_data.dump
   ```
-3. **Implémentez un endpoint renvoyant la totalité des unités légales** :
-   - Utilisez la méthode de service qui renvoie un `Stream` contenant les unités légales.
-   - Créez un endpoint pour récupérer les données en flux continu.
-   - Utilisez `StreamingResponseBody` pour envoyer les données.
-   - Attention pour avoir un affichage au fur et à mesure dans le navigateur ne définissez pas de ``ContentDisposition`` mais renvoyer les données avec un ``Content-Type`` de ``text/plain``.
-4. **Comparez les endpoints** :
-   - Au sein de votre navigateur afficher les urls suivantes :
-   - `GET /api/unites-legales/export/csv`.
-   - `GET /api/unites-legales/stream`.
-   - Remarque : le stream permet de récupérer les données au fur et à mesure de leur génération, pour des volumes de données très importants cette technique permet aussi d'éviter de saturer la mémoire et d'éviter une éventuelle ``OutOfMemoryError``.
+   - Vous venez de charger 1 millions d'unités légales avec quelques établissements par unités dans votre base de données.
+
+2. **Passez en profil `integration`** :
+   - Démarrer votre application avec le profil `integration` (avec le Spring Boot Dashboard ou bien avec la commande `mvn spring-boot:run -Dspring-boot.run.profiles=integration`).
+   - Consulter le endpoint `GET /api/unites-legales` avec l'outil de votre choix
+   - Constater le temps de réponse (infini)
+
+3. **Implémentez un endpoint en mode Stream renvoyant la totalité des unités légales** :
+   - Utiliser la méthode de service qui renvoie un `Stream` contenant les unités légales .
+   - Créer un endpoint ``/api/unites-legales/stream`` pour récupérer les données en flux continu.
+   - Utiliser `StreamingResponseBody` pour envoyer les données.
+   - Attention pour avoir un affichage au fur et à mesure dans le navigateur ne définissez pas de ``ContentDisposition`` et renvoyer les données avec un ``Content-Type`` de ``text/plain``.
+   - Tester votre endpoint avec l'outil de votre choix et comparer
+
+5. 
+   - Remarque : le stream permet de récupérer les données au fur et à mesure de leur génération, pour des volumes de données très importants cette technique permet aussi d'éviter de saturer la mémoire et même d'éviter une éventuelle ``OutOfMemoryError``.
 
 ---
 
