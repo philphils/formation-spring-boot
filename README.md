@@ -141,8 +141,7 @@ Ajoutez un endpoint `GET /api/unites-legales/export/csv` pour exporter l'ensembl
    - Attention pour avoir un affichage au fur et à mesure dans le navigateur ne définissez pas de ``ContentDisposition`` et renvoyer les données avec un ``Content-Type`` de ``text/plain``.
    - Tester votre endpoint avec l'outil de votre choix et comparer
 
-5. 
-   - Remarque : le stream permet de récupérer les données au fur et à mesure de leur génération, pour des volumes de données très importants cette technique permet aussi d'éviter de saturer la mémoire et même d'éviter une éventuelle ``OutOfMemoryError``.
+   - **Remarque :** le stream permet de récupérer les données au fur et à mesure de leur génération, pour des volumes de données très importants cette technique permet aussi d'éviter de saturer la mémoire et même d'éviter une éventuelle ``OutOfMemoryError``.
 
 ---
 
