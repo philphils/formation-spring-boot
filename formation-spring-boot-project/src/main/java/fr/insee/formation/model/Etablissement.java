@@ -11,6 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,12 +28,17 @@ public class Etablissement {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @NotBlank(message = "Le SIRET est obligatoire")
+    @Size(min = 14, max = 14, message = "Le SIRET doit contenir exactement 14 caractères")
     private String siret;
 
     @Column(nullable = false)
+    @NotBlank(message = "Le NIC est obligatoire")
+    @Size(min = 5, max = 5, message = "Le NIC doit contenir exactement 5 caractères")
     private String nic;
 
     @Column(nullable = false)
+    @NotBlank(message = "L'adresse est obligatoire")
     private String adresse;
 
     @ManyToOne
