@@ -58,12 +58,13 @@ Implémentez les endpoints suivants. Utilisez les services et repositories dispo
   - Créer une nouvelle unité légale.
   - Mettre à jour une unité légale.
   - Supprimer une unité légale.
+  - Ajouter un établissement à une unité légale (à partir de son identifiant)
 - **Établissement** :
   - Récupérer tous les établissements.
   - Récupérer un établissement par son SIRET.
   - Récupérer les établissements d'une unité légale.
 
-Note : Pour spécifier les informations renvoyés nous vous invitons pour plus de simplicité à utiliser les annotations Jackson (@JsonIgnore, @JsonInclude, @JsonManagedReference, etc.). Mais vous pouvez aussi créer des DTOs.
+**Note :** Pour spécifier les informations renvoyés nous vous invitons pour plus de simplicité à utiliser les annotations Jackson (@JsonIgnore, @JsonInclude, @JsonManagedReference, etc.) directement dans les entités. Mais vous pouvez aussi créer des DTOs ce qui serait conseillé pour une réelle application.
 
 #### Gestion des erreurs avec messages explicites
 
@@ -101,7 +102,7 @@ public ResponseEntity<Object> getUniteLegaleById(@PathVariable Long id) {
 }
 ```
 
-#### Tester votre API
+#### Tester manuellement votre API
 
 - Démarrer votre application avec le profil `dev` (avec le Spring Boot Dashboard ou bien avec la commande `mvn spring-boot:run -Dspring-boot.run.profiles=dev`).
 - Le composant SireneDataDevInitializer va charger des données de test en base de données mémoire (H2)
@@ -161,19 +162,21 @@ Nous allons mettre en place une gestion des exceptions pour afficher un message 
 
 ---
 
-### 9. Validation des données
-Ajoutez des validations dans les DTOs pour valider les données envoyées dans les requêtes.
-- Utilisez `@Valid` pour valider les données.
+### 7. Validation des données
+
+Nous allons ajouter des fonctionnalités de validation des données pour les endpoints ayant en entrée des objets (ici les unités légales et les établissements).
+- Ajoutez des validations directement dans les entités ``UniteLegale`` et ``Etablissement`` pour valider les données envoyées dans les requêtes (dans une application réelle on privilégiera l'utilisation de DTOs).
 - Utilisez des annotations comme `@NotNull`, `@Size`, etc.
-- Vérifiez la taille du SIREN et le fait qu'il ne soit pas null pour l'endpoint : `GET /api/unites-legales/{siren}`.
-- Vérifier que vous récupérer le bon code HTTP et le bon message d'erreur en cas de siren invalide.
+- Utilisez `@Valid` pour déclencher la validation les données.
+- Ajouter une méthode dans la classe `GlobalExceptionHandler` pour gérer les erreurs de validation et renvoyer un message d'erreur explicite (interception de l'exception ``MethodArgumentNotValidException``).
+- Vérifier que vous récupérer le bon code HTTP et le bon message d'erreur, en cas de siren invalide par ex.
 
 ---
 
-### 10. Tests
+### 8. Tests
 Créez une classe de tests `UniteLegaleControllerTest` unitaires sans serveur embarqué avec `@WebMvcTest` pour tester le contrôleur `UniteLegaleController`.
 - Vérifiez que le endpoint `GET /api/unites-legales/{siren}` renvoie le code HTTP 200 si le SIREN est valide.
-- Vérifiez que vous récupérez l'exception `ResponseStatusException` avec le code HTTP 400 si le SIREN est null, vide ou pas de la bonne taille.
+- Vérifiez que vous récupérez le code HTTP 404 si le SIREN ne correspond à aucune unité légale.
 
 Créez une classe de tests d'intégration `UniteLegaleControllerIntegrationTest` avec `@SpringBootTest`.
 - Créez quelques unités légales en base de données.
@@ -187,8 +190,9 @@ Créez une classe de tests d'intégration `UniteLegaleControllerIntegrationTest`
    - `EtablissementController` avec les endpoints CRUD.
 2. **Gestion des exceptions** :
    - Classe `GlobalExceptionHandler` pour centraliser la gestion des exceptions.
+   - Classe ``ErrorResponse`` pour structurer les réponses d'erreur.
 3. **Validation des données** :
-   - Utilisation de `@Valid` et annotations de validation dans les DTOs.
+   - Utilisation de `@Valid` et annotations de validation dans les entités.
 4. **Tests** :
    - Classe `UniteLegaleControllerTest` pour les tests unitaires.
    - Classe `UniteLegaleControllerIntegrationTest` pour les tests d'intégration.
