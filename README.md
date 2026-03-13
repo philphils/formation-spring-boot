@@ -109,7 +109,6 @@ public ResponseEntity<Object> getUniteLegaleById(@PathVariable Long id) {
 - Avec Postman ou l'outil de votre choix, tester les endpoints que vous avez implémentés (lecture des ULs, modification, suppression, lecture des établissements, etc.).
 
 ---
-// TODO : relecture et reformulation de la partie suivanteS
 ### 4. Génération de fichiers
 Ajoutez un endpoint `GET /api/unites-legales/export/csv` pour exporter l'ensemble des unités légales.
 
@@ -122,20 +121,23 @@ Ajoutez un endpoint `GET /api/unites-legales/export/csv` pour exporter l'ensembl
 ---
 
 ### 5. Gestion des gros volumes de données avec `Stream`
-1. **Chargez le dump dans votre base de données sous Podman** :
-   - Placer vous dans le répertoire racine du projet et exécutez la commande suivante :
-  ```bash
-  # Charge un dump PostgreSQL au format "directory" en parallèle sur 4 threads
-  pg_restore -U postgres -d sirene_db -j 4 -F directory ./src/main/resources/dumps/tp_5_integration_data.dump
-  ```
-   - Vous venez de charger 1 millions d'unités légales avec quelques établissements par unités dans votre base de données.
+1. **Téléchargez et préparez le dump** :
+   - Téléchargez le dump depuis cette adresse : [tp_5_integration_data.dump.zip](https://gitlab.insee.fr/formations-informatiques/cursus-nouveaux-arrivants-sndin/formation-spring-boot/-/blob/main/formation-spring-boot-project/src/main/resources/dumps/tp_5_integration_data.dump.zip?ref_type=heads)
+   - Dézippez le fichier téléchargé et placez-le dans le répertoire `src/main/resources/dumps/` de votre projet.
+2. **Chargez le dump dans votre base de données sous Podman** :
+   - Placez-vous dans le répertoire racine du projet et exécutez la commande suivante :
+   ```bash
+    # Charge un dump PostgreSQL au format "directory" en parallèle sur 4 threads
+    pg_restore -U postgres -d sirene_db -j 4 -F directory ./src/main/resources/dumps/tp_5_integration_data.dump
+   ```
+   - Vous venez de charger 1 million d'unités légales avec quelques établissements par unité dans votre base de données.
 
-2. **Passez en profil `integration`** :
+3. **Passez en profil `integration`** :
    - Démarrer votre application avec le profil `integration` (avec le Spring Boot Dashboard ou bien avec la commande `mvn spring-boot:run -Dspring-boot.run.profiles=integration`).
    - Consulter le endpoint `GET /api/unites-legales` avec l'outil de votre choix
    - Constater le temps de réponse (infini)
 
-3. **Implémentez un endpoint en mode Stream renvoyant la totalité des unités légales** :
+4. **Implémentez un endpoint en mode Stream renvoyant la totalité des unités légales** :
    - Utiliser la méthode de service qui renvoie un `Stream` contenant les unités légales .
    - Créer un endpoint ``/api/unites-legales/stream`` pour récupérer les données en flux continu.
    - Utiliser `StreamingResponseBody` pour envoyer les données.
