@@ -1,202 +1,110 @@
-# TP5 : Créer une API REST avec Spring Web
+# Formation Spring Boot : Démarrage Supersonic ! 🚀
 
-## Objectifs
-- Concevoir et implémenter une API REST pour exposer des données SIRENE (unités légales et établissements).
-- Réfléchir au nommage des endpoints et aux verbes HTTP appropriés.
-- Implémenter des fonctionnalités avancées comme la génération de fichiers et les streams.
-- Utiliser Spring Boot Actuator pour monitorer les performances.
-- Tester les endpoints et les fonctionnalités.
+Ce dépôt contient l'ensemble des ressources pédagogiques, supports de cours et travaux pratiques de la formation **Spring Boot 3.x**. L'objectif est de maîtriser l'écosystème Spring pour construire des applications Java modernes, configurables et sécurisées.
 
----
-
-## Étapes du TP
-
-### 0. Préparation du projet
-**Vérifiez les dépendances** dans le `pom.xml` :
-- Vérifier la présence du starter `spring-boot-starter-web`.
-- Vérifier la présence du starter `spring-boot-starter-data-jpa`.
-- Vérifier la présence du starter `spring-boot-starter-validation`.
-- Vérifier la présence du starter `spring-boot-starter-actuator`.
+## 🎯 Objectifs de la formation
+* **Industrialiser** : Créer des projets robustes avec Maven et Spring Initializr.
+* **Comprendre** : Maîtriser l'auto-configuration et le rôle des *Starters*.
+* **Configurer** : Gérer les environnements via les *Properties* et les *Profiles*.
+* **Observer** : Monitorer l'état de santé de l'application avec *Actuator*.
+* **Persister** : Manipuler les données simplement avec *Spring Data JPA*.
+* **Sécuriser** : Protéger les points d'entrée de l'API avec *Spring Security*.
 
 ---
 
-### 2. Rappel sur la conception des endpoints REST
-Réfléchissez à la conception des endpoints pour gérer les unités légales et les établissements. Voici quelques questions pour vous guider :
-- **Quels verbes HTTP utiliser ?**
-  - `GET` pour récupérer des données.
-  - `POST` pour créer des données.
-  - `PUT` pour mettre à jour des données.
-  - `DELETE` pour supprimer des données.
-- **Comment nommer les endpoints ?**
-  - Exemples :
-    - `/api/unites-legales` pour gérer les unités légales.
-    - `/api/etablissements` pour gérer les établissements.
-    - `/api/unites-legales/{id}/etablissements` pour récupérer les établissements d'une unité légale.
-- **Comment gérer les erreurs ?**
-  - Utilisez des codes HTTP appropriés (ex : `404` pour une ressource non trouvée).
-  - Retournez des messages d'erreur clairs mais sans donner d'informations critiques.
+## 📑 Sommaire du cursus
 
-#### Codes de retour HTTP courants
+### 1. Rappels autour du noyau Spring (IoC & DI)
 
-| Code | Status | Utilisation | Exemple |
-|------|--------|-------------|---------|
-| **200** | OK | Requête réussie, données retournées | GET, PUT |
-| **201** | Created | Ressource créée avec succès | POST |
-| **204** | No Content | Requête réussie, aucune donnée retournée | DELETE |
-| **400** | Bad Request | Requête malformée (données invalides) | POST avec données erronées |
-| **404** | Not Found | Ressource non trouvée | GET /api/unites-legales/999 |
-| **409** | Conflict | Conflit (ex: SIREN déjà existant) | POST avec doublon |
-| **500** | Server Error | Erreur serveur | Erreur interne |
+- Principes et rôle de l'injection de dépendance
+- Technique de création des beans (annotation/Java based)
+- Rôle central du container
+- Pattern de l'inversion de contrôle (IoC)
+
+### 2. Spring Boot : Auto-configuration & Starters
+- Le rôle du **Grand Architecte** : simplifier et standardiser la configuration manuelle.
+- Le **Starter Parent** : gestion centralisée des versions de dépendances et de leur cohérence.
+- **Spring Initializr** : générer un projet Spring Boot avec les dépendances nécessaires.
+- Utilisation des outils : Spring Boot Dashboard et extensions VS Code.
+- Structure d'un projet Spring Boot
+
+**💡 TP1** : Initialisation d'un projet Spring Boot et découverte de la structure.
+
+### 3. Gestion des Configurations & Profiles
+- Externalisation de la configuration (`application.properties` / `.yml`).
+- Centralisation des properties de différentes sources avec l'Environnement Abstraction.
+- **Type-safe configuration** avec `@ConfigurationProperties`.
+- Validation des configurations avec ``spring-boot-configuration-processor``.
+
+### 4. Observabilité avec Spring Boot Actuator
+- Introduction à l'**Actuator** : rôle et fonctionnalités clés.
+- Configuration des endpoints (`/actuator`).
+- Exposition des métriques de santé (`/health`) et monitoring (`/metrics`).
+- Visualisation des variables d'environnement (`/env`) et des beans (`/beans`).
+- Gestion dynamique des logs via `/loggers`.
+- Actuator et enjeux de sécurité.
+- Stratégies multi-environnements (dev, test, prod) via les **Profiles**.
+
+**💡 TP2** : Configuration de l'Actuator et découverte des endpoints.
+**💡 TP3** : Mise en place des Profiles et des Properties.
+
+### 5. Persistance avec Spring Data JPA
+- Mise en place de la couche de données avec Spring Data JPA.
+- Configuration des ``Datasource`` et de JPA
+- Génération de l'implémentation des méthodes d'accès aux données via les ``Repository``
+- Génération par convention de nommage
+- Gestion des volumes importants avec la pagination ou les ``Stream``
+- Utilisation de ``@Query`` pour les requêtes complexes et des DTOs
+- Configuration multi-datasources 
+
+**💡 TP4** : Couche de données avec Spring Data JPA
+
+### 6. Création d'une API REST avec Spring Web
+
+- Principes de l'architecture REST et bonnes pratiques de conception
+- Mise en place de Spring Web
+- Création des contrôleurs REST avec ``@Controller`` et ``@RestController``
+- Configuration fine des requêtes avec ``@RequestMapping`` et ``@GetMapping``, ``@PostMapping``, etc.
+- Gestion des paramètres de requête et des corps de requête
+- Sérialisation et désérialisation des objets avec Jackson
+- Envoi de fichiers et streaming pour les gros volumes
+- Gestion des erreurs et des exceptions avec ``@ControllerAdvice``
+- Outils de tests avec ``@SpringBootTest`` et ``@WebMvcTest``
+
+**💡 TP5** : Création d'une API REST
+
+### 7. Sécurité Applicative 🔐
+//TODO à compléter
+
+---
+## Support de cours
+
+**Diapo accessible à :** https://philphils.github.io/formation-spring-boot/
 
 ---
 
-### 3. Implémentation des endpoints
-Implémentez les endpoints suivants. Utilisez les services et repositories disponibles dans le projet (vous n'avez que les contrôleurs à créer) :
-- **Unité légale** :
-  - Récupérer toutes les unités légales.
-  - Récupérer une unité légale par son SIREN.
-  - Créer une nouvelle unité légale.
-  - Mettre à jour une unité légale.
-  - Supprimer une unité légale.
-  - Ajouter un établissement à une unité légale (à partir de son identifiant)
-- **Établissement** :
-  - Récupérer tous les établissements.
-  - Récupérer un établissement par son SIRET.
-  - Récupérer les établissements d'une unité légale.
-
-**Note :** Pour spécifier les informations renvoyés nous vous invitons pour plus de simplicité à utiliser les annotations Jackson (@JsonIgnore, @JsonInclude, @JsonManagedReference, etc.) directement dans les entités. Mais vous pouvez aussi créer des DTOs ce qui serait conseillé pour une réelle application.
-
-#### Gestion des erreurs avec messages explicites
-
-Pour améliorer l'expérience du client API, utilisez la classe `ErrorResponse` pour retourner des messages d'erreur clairs, structurés et dont vous contrôlez le contenu :
-
-```java
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class ErrorResponse {
-    private int status;
-    private String message;
-}
-```
-
-**Exemple d'utilisation dans un contrôleur** :
-```java
-@GetMapping("/{id}")
-public ResponseEntity<Object> getUniteLegaleById(@PathVariable Long id) {
-    Optional<UniteLegale> unite = uniteLegaleService.findById(id);
-    if (unite.isPresent()) {
-        return ResponseEntity.ok(unite.get());
-    }
-    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(new ErrorResponse(404, "Aucune unité légale correspondant à l'identifiant: " + id));
-}
-```
-
-**Réponse d'erreur JSON** :
-```json
-{
-  "status": 404,
-  "message": "Aucune unité légale correspondant à l'identifiant: 999"
-}
-```
-
-#### Tester manuellement votre API
-
-- Démarrer votre application avec le profil `dev` (avec le Spring Boot Dashboard ou bien avec la commande `mvn spring-boot:run -Dspring-boot.run.profiles=dev`).
-- Le composant SireneDataDevInitializer va charger des données de test en base de données mémoire (H2)
-- Avec Postman ou l'outil de votre choix, tester les endpoints que vous avez implémentés (lecture des ULs, modification, suppression, lecture des établissements, etc.).
-
----
-// TODO : relecture et reformulation de la partie suivanteS
-### 4. Génération de fichiers
-Ajoutez un endpoint `GET /api/unites-legales/export/csv` pour exporter l'ensemble des unités légales.
-
-- **Indications pour la génération de fichiers** : Utiliser les méthodes generateCsv des classes de services pour générer le fichier CSV.
-
-- **Rappel : Utilisez `ResponseEntity`** pour renvoyer le fichier :
-  - `ResponseEntity<byte[]>` pour les fichiers générés en mémoire.
-  - `ResponseEntity<Resource>` pour les fichiers existants (pas ici, mais utile à savoir).
+## 🛠 Prérequis
+- **Java 17+**
+- **Maven 3.8+**
+- VS Code avec le **Spring Boot Extension Pack** (recommandé) ou IntelliJ/STS.
 
 ---
 
-### 5. Gestion des gros volumes de données avec `Stream`
-1. **Chargez le dump dans votre base de données sous Podman** :
-   - Placer vous dans le répertoire racine du projet et exécutez la commande suivante :
-  ```bash
-  # Charge un dump PostgreSQL au format "directory" en parallèle sur 4 threads
-  pg_restore -U postgres -d sirene_db -j 4 -F directory ./src/main/resources/dumps/tp_5_integration_data.dump
-  ```
-   - Vous venez de charger 1 millions d'unités légales avec quelques établissements par unités dans votre base de données.
+## 🚀 Organisation des Travaux Pratiques
+Le dépôt est structuré par branches pour permettre une progression étape par étape :
 
-2. **Passez en profil `integration`** :
-   - Démarrer votre application avec le profil `integration` (avec le Spring Boot Dashboard ou bien avec la commande `mvn spring-boot:run -Dspring-boot.run.profiles=integration`).
-   - Consulter le endpoint `GET /api/unites-legales` avec l'outil de votre choix
-   - Constater le temps de réponse (infini)
-
-3. **Implémentez un endpoint en mode Stream renvoyant la totalité des unités légales** :
-   - Utiliser la méthode de service qui renvoie un `Stream` contenant les unités légales .
-   - Créer un endpoint ``/api/unites-legales/stream`` pour récupérer les données en flux continu.
-   - Utiliser `StreamingResponseBody` pour envoyer les données.
-   - Attention pour avoir un affichage au fur et à mesure dans le navigateur ne définissez pas de ``ContentDisposition`` et renvoyer les données avec un ``Content-Type`` de ``text/plain``.
-   - Tester votre endpoint avec l'outil de votre choix et comparer
-
-   - **Remarque :** le stream permet de récupérer les données au fur et à mesure de leur génération, pour des volumes de données très importants cette technique permet aussi d'éviter de saturer la mémoire et même d'éviter une éventuelle ``OutOfMemoryError``.
+| Branche | Sujet du TP |
+| :--- | :--- |
+| `main` | Structure globale et documentation |
+| `TP1` | Initialisation du projet et découverte de la structure |
+| `TP2` | Configuration de l'Actuator et monitoring |
+| `TP3` | Mise en place des Profiles et des Properties |
+| `TP4` | Couche de données avec Spring Data JPA |
+| `TP5` | Création d'une API REST |
 
 ---
 
-### 6. Gestion des exceptions
-
-- Laisser votre serveur actif avec le profil intégration.
-- Arrêter votre conteneur de base de données.
-- Tester votre endpoint ``/api/unites-legales/stream`` avec l'outil de votre choix.
-- Le message qui s'affiche vous semble-t-il approprié ? Quels problèmes l'affichage d'un tel message pose-t-il ?
-
-Nous allons mettre en place une gestion des exceptions pour afficher un message plus explicite et éviter de donner des informations sensibles à l'utilisateur.
-- Créez une classe `GlobalExceptionHandler` pour centraliser la gestion des exceptions (Utilisez `@RestControllerAdvice`).
-- Ecrivez une première méthode pour gérer les exceptions globalement.
-- Configurer un message par défaut pour les exceptions et logger le contenu de l'exception.
-- Tester toujours avec la base de données arrêtée.
-- **Indication :** Penser à réutiliser la classe `ErrorResponse` pour structurer la réponse d'erreur.
-
----
-
-### 7. Validation des données
-
-Nous allons ajouter des fonctionnalités de validation des données pour les endpoints ayant en entrée des objets (ici les unités légales et les établissements).
-- Ajoutez des validations directement dans les entités ``UniteLegale`` et ``Etablissement`` pour valider les données envoyées dans les requêtes (dans une application réelle on privilégiera l'utilisation de DTOs).
-- Utilisez des annotations comme `@NotNull`, `@Size`, etc.
-- Utilisez `@Valid` pour déclencher la validation les données.
-- Ajouter une méthode dans la classe `GlobalExceptionHandler` pour gérer les erreurs de validation et renvoyer un message d'erreur explicite (interception de l'exception ``MethodArgumentNotValidException``).
-- Vérifier que vous récupérer le bon code HTTP et le bon message d'erreur, en cas de siren invalide par ex.
-
----
-
-### 8. Tests
-Créez une classe de tests `UniteLegaleControllerTest` unitaires sans serveur embarqué avec `@WebMvcTest` pour tester le contrôleur `UniteLegaleController`.
-- Vérifiez que le endpoint `GET /api/unites-legales/{siren}` renvoie le code HTTP 200 si le SIREN est valide.
-- Vérifiez que vous récupérez le code HTTP 404 si le SIREN ne correspond à aucune unité légale.
-
-Créez une classe de tests d'intégration `UniteLegaleControllerIntegrationTest` avec `@SpringBootTest`.
-- Créez quelques unités légales en base de données.
-- Tester que vous pouvez les récupérer avec le endpoint `GET /api/unites-legales/stream`.
-
----
-
-## Livrables
-1. **Contrôleurs** :
-   - `UniteLegaleController` avec les endpoints CRUD et les fonctionnalités de génération de fichiers et de streaming.
-   - `EtablissementController` avec les endpoints CRUD.
-2. **Gestion des exceptions** :
-   - Classe `GlobalExceptionHandler` pour centraliser la gestion des exceptions.
-   - Classe ``ErrorResponse`` pour structurer les réponses d'erreur.
-3. **Validation des données** :
-   - Utilisation de `@Valid` et annotations de validation dans les entités.
-4. **Tests** :
-   - Classe `UniteLegaleControllerTest` pour les tests unitaires.
-   - Classe `UniteLegaleControllerIntegrationTest` pour les tests d'intégration.
-
----
-
-Bonne chance pour ce TP ! Si vous avez des questions, n'hésitez pas à demander.
+## 📚 Ressources complémentaires
+- [Documentation officielle Spring Boot](https://spring.io/projects/spring-boot)
+- [Spring Boot Reference Guide](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
+- [Spring Initializr](https://start.spring.io/)
