@@ -70,7 +70,7 @@
 
 .reveal section img.image-large {
   max-height: 70vh !important;
-  max-width: 130vh;
+  max-width: 70vh;
 }
 
 .reveal table { font-size: 0.75em; }
