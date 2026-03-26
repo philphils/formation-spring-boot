@@ -84,9 +84,9 @@ Ce dépôt contient l'ensemble des ressources pédagogiques, supports de cours e
 ---
 
 ## 🛠 Prérequis
-- **Java 17+**
-- **Maven 3.8+**
-- VS Code avec le **Spring Boot Extension Pack** (recommandé) ou IntelliJ/STS.
+- Formation Java de base
+- Formation Spring Initiation
+
 
 ---
 
