@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/unites-legales")
+@PreAuthorize("hasRole('USER')")
 public class UniteLegaleController {
 
     private static final String UNITE_NOT_FOUND = "Aucune unité légale correspondant à l'identifiant: ";
@@ -101,6 +103,7 @@ public class UniteLegaleController {
      * @return ResponseEntity avec l'unité légale créée (201 CREATED)
      */
     @PostMapping
+    @PreAuthorize("hasRole('GESTIONNAIRE')")
     public ResponseEntity<UniteLegale> createUniteLegale(@Valid @RequestBody UniteLegale uniteLegale) {
         UniteLegale created = uniteLegaleService.save(uniteLegale);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
@@ -116,6 +119,7 @@ public class UniteLegaleController {
      *         FOUND avec message d'erreur
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('GESTIONNAIRE')")
     public ResponseEntity<Object> updateUniteLegale(@PathVariable Long id,
             @Valid @RequestBody UniteLegale uniteLegale) {
         Optional<UniteLegale> existing = uniteLegaleService.findById(id);
@@ -143,6 +147,7 @@ public class UniteLegaleController {
      *         d'erreur
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('GESTIONNAIRE')")
     public ResponseEntity<Object> deleteUniteLegale(@PathVariable Long id) {
         Optional<UniteLegale> existing = uniteLegaleService.findById(id);
 
@@ -186,6 +191,7 @@ public class UniteLegaleController {
      *         FOUND si l'unité légale n'existe pas
      */
     @PostMapping("/{uniteLegaleId}/etablissements")
+    @PreAuthorize("hasRole('GESTIONNAIRE')")
     public ResponseEntity<Object> createEtablissementForUniteLegale(
             @PathVariable Long uniteLegaleId,
             @Valid @RequestBody Etablissement etablissementInput) {
