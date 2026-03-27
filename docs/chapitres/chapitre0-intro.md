@@ -12,9 +12,35 @@
 --
 # Plan
 
-* [La création du context](slide4.xml) 
+* [Introduction à Spring Boot](./#/0/5)
+* [Rappel sur le noyau de Spring](./#/1)
+* [Architecture d'une application Spring Boot](./#/2)
+* [Auto-configuration](./#/3)
+* [Création d'une application Spring Boot](./#/4)
+* [Structure d'un projet Spring Boot](./#/5)
+* [Gestion des propriétés](./#/6)
+* [Actuator pour la supervision](./#/7)
+* [Gestion des profils](./#/8)
 
+--
+# Plan
 
+* [Spring Data pour l'accès aux données](./#/9)
+* [Conventions de nommage](./#/10)
+* [Pagination, tri et streaming](./#/11)
+* [Requêtes complexes avec Spring Data](./#/12)
+* [Création d'une API REST](./#/13)
+* [Spring Web pour les applications web](./#/14)
+* [Gestion du JSON avec Jackson](./#/15)
+* [Envoi de fichiers](./#/16)
+
+--
+# Plan
+
+* [Gestion des exceptions dans une application web](./#/17)
+* [Tests pour les applications web](./#/18)
+* [Sécurité avec Spring Security](./#/19)
+* [Conclusion](./#/20)
 --
 # Introduction
 
