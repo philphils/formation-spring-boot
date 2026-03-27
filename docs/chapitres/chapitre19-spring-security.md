@@ -271,7 +271,8 @@ spring.security.oauth2.resourceserver.jwt.authority-prefix=ROLE_
 
 --
 
-### Récupération de l'ensemble du contexte de sécurité
+### Récupération de l'ensemble
+### du contexte de sécurité
 
 - On peut aussi au besoin récupérer l'ensemble du contexte de sécurité avec l'annotation ``@CurrentSecurityContext``
 - Exemple :
@@ -282,6 +283,51 @@ spring.security.oauth2.resourceserver.jwt.authority-prefix=ROLE_
       return context;
   }
   ```
+
+--
+
+### Tester Spring Security
+
+- Spring propose quelques outils pour tester les règles de sécurité
+- Il faut importer :
+```xml
+<dependency>
+     <groupId>org.springframework.security</groupId>
+     <artifactId>spring-security-test</artifactId>
+     <scope>test</scope>
+ </dependency>
+```
+
+--
+### @WithMockUser
+
+- L'annotation ``@WithMockUser`` permet de définir un utilisateur mocké pour les tests
+- On peut alors tester la logique de sécurité de l'application
+- Exemple :
+  ```java
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void testAdmin() {
+    // ...
+  }
+  ```
+
+--
+### Le piège du CSRF
+
+- Spring Security active par défaut le CSRF
+- Il faut donc ajouter un jeton csrf pour les tests
+- Exemple :
+```java
+  mockMvc.perform(post("/api/unites-legales")
+    .with(SecurityMockMvcRequestPostProcessors.csrf())
+    //...
+```
+--
+### Indications
+
+- Pour tester la logique d'un controller, on pourra utiliser ``@WebMvcTest``
+- Pour tester les règles globales définies dans ``SecurityConfig``, on devra utiliser ``@SpringBootTest`` en important la classe de configuration 
 
 --
 
