@@ -87,6 +87,7 @@ HMACSHA256(
 - L'algorithme utilisé (RSA) permet de s'assurer que seul Keycloak a pu la calculer
 - Keycloack publie sa clef publique
 - Les API peuvent vérifier la signature des JWT avec cette clef publique et s'assurer ainsi de la validité du token
+- Il est possible de voir le contenu d'un JWT sur [jwt.io](http://jwt.io)
 
 --
 
