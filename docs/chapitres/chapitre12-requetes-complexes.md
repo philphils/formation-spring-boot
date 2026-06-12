@@ -21,7 +21,7 @@
 
 ## @Query
 
-- On pourra typiquement utiliser ce mécanisme pour utiliser les jointure de type `FETCH` permettant d'éviter le problème du `SELECT N+1` :
+- On pourra typiquement utiliser ce mécanisme pour utiliser les jointure de type `FETCH` permettant d'éviter le problème du `SELECT N+1` (cf. [Formation Hibernate 1](https://philphils.github.io/formation-hibernate-basique/#/6/3)) :
     ```java    
     @Query("SELECT u FROM User u 
                 JOIN FETCH u.country country")
@@ -74,7 +74,7 @@ public class DataSourceUserConfig {
         return DataSourceBuilder.create().build();
     }
     
-    @Primary //l'annotation `@Primary` rend les beans prioritaires lors de l'injection de dépendances ! Attention au conflit
+    @Primary
     @Bean(name = "userEntityManager")
     public LocalContainerEntityManagerFactoryBean userEntityManager(
             @Qualifier("userDataSource") DataSource dataSource) {
@@ -82,12 +82,12 @@ public class DataSourceUserConfig {
         LocalContainerEntityManagerFactoryBean em = 
             new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
-        em.setPackagesToScan("fr.insee.formation.entities.user");
+        em.setPackagesToScan("com.example.entities.user");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         return em;
     }
     
-    @Primary //l'annotation `@Primary` rend les beans prioritaires lors de l'injection de dépendances ! Attention au conflit
+    @Primary
     @Bean(name = "userTransactionManager")
     public PlatformTransactionManager userTransactionManager(
             @Qualifier("userEntityManager") 
@@ -103,7 +103,6 @@ public class DataSourceUserConfig {
 
 
 ```java
-@Configuration
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
@@ -128,7 +127,7 @@ public class DataSourceOrderConfig {
         LocalContainerEntityManagerFactoryBean em = 
             new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
-        em.setPackagesToScan("fr.insee.formation.entities.order");
+        em.setPackagesToScan("com.example.entities.order");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         return em;
     }
@@ -169,13 +168,17 @@ spring.jpa.hibernate.ddl-auto=update
 --
 ### Les repositories
 
+- Pour la datasource PRINCIPALE
 ```java
-// Pour la datasource PRINCIPALE
+//(on suppose que la classe User est sous com.example.entities.user)
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 }
+```
 
-// Pour la datasource SECONDAIRE
+- Pour la datasource SECONDAIRE
+```java
+//(on suppose que la classe Order est sous com.example.entities.order)
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 }
@@ -185,7 +188,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 ## 5. Bonnes pratiques
 
-1. **Utiliser @Primary** : Obligatoire avec plusieurs datasources pour indiquer la source par défaut ➡️ Attention lors de l'injection à éviter les confusion avec `@Qualifier`
+1. **Utiliser @Primary** : Obligatoire avec plusieurs datasources pour indiquer la source par défaut ➡️ Attention lors de l'injection à lever les ambiguïtés avec `@Qualifier`
 2. **Structurer les packages** : Organiser les entités et les repositories par datasource
 3. **Nommer clairement** : Utiliser des noms explicites pour les beans (`primaryDataSource`, `secondaryDataSource`)
 
