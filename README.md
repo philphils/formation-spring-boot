@@ -74,7 +74,23 @@ Ce dépôt contient l'ensemble des ressources pédagogiques, supports de cours e
 **💡 TP5** : Création d'une API REST
 
 ### 7. Sécurité Applicative 🔐
-//TODO à compléter
+- **Authentification vs Autorisation** : Comprendre la différence fondamentale.
+- **Keycloak** : Identity Provider (IdP) pour la gestion des utilisateurs et des tokens JWT.
+- **JWT (JSON Web Token)** : Structure (Header, Payload, Signature), vérification via clé publique.
+- **Flux d'authentification** : Obtention du token, vérification par l'API, accès aux ressources.
+- **Spring Security OAuth2 Resource Server** :
+  - Configuration avec `spring-boot-starter-oauth2-resource-server`
+  - `SecurityFilterChain` : Désactivation CSRF, API stateless, gestion CORS
+  - `SecurityConfig` avec `@EnableMethodSecurity`
+  - Règles d'accès via `@PreAuthorize` (hasRole, conditions complexes)
+  - Sécurisation fine : Actuator (health/info vs env/metrics/beans)
+- **Tests de sécurité** :
+  - `@SpringBootTest` + `@AutoConfigureMockMvc` pour tests d'intégration
+  - `@WebMvcTest` pour tests unitaires de contrôleurs
+  - `@WithMockUser` pour simuler des utilisateurs authentifiés
+  - Piège CSRF : `.with(csrf())` obligatoire pour les POST
+
+**💡 TP6** : Sécurisation complète d'une API avec Keycloak (Docker, Realm, Client, Rôles USER/GESTIONNAIRE/ADMIN, tests)
 
 ---
 ## Support de cours
@@ -101,6 +117,7 @@ Le dépôt est structuré par branches pour permettre une progression étape par
 | `TP3` | Mise en place des Profiles et des Properties |
 | `TP4` | Couche de données avec Spring Data JPA |
 | `TP5` | Création d'une API REST |
+| `TP6` | **Sécurisation d'une API avec Keycloak et Spring Security** |
 
 ---
 
