@@ -226,8 +226,6 @@ Vous avez une application web prête à être développée !
 7. Accéder à http://localhost:8080/hello2 et vérifier que le message s'affiche correctement
 8. Vous pouvez donc modifier votre application sans avoir à redémarrer le serveur manuellement, vos changements sont pris en compte à la volée (tant qu'ils ne sont pas trop impactants) !
 
-**Astuce Eclipse** : Vous pouvez ouvrir plusieurs fichiers en onglets pour naviguer facilement
-
 ### Avec VS Code et Spring Extension Pack :
 1. Sans redémarrer le serveur, créer un nouveau fichier `Hello2Controller.java` dans le dossier `src/main/java/com/example/controller`
 2. Ajouter le code suivant :
@@ -251,6 +249,3 @@ Vous avez une application web prête à être développée !
 4. Grâce aux DevTools et Spring Reload, le serveur se redémarrera automatiquement en arrière-plan
 5. Accéder à http://localhost:8080/hello2 et vérifier que le message s'affiche correctement
 6. Vous pouvez donc modifier votre application sans avoir à redémarrer le serveur manuellement, vos changements sont pris en compte à la volée (tant qu'ils ne sont pas trop impactants) !
-
-**Astuce VS Code** : Vous pouvez ouvrir plusieurs onglets et naviguer entre vos fichiers facilement avec Ctrl+Tab ou en cliquant sur les onglets
-
