@@ -74,7 +74,7 @@ public IReservationSalleService reservationSalleService() {
 
 * L’interface qui lui est dédié est l’`ApplicationContext`
 
-* Le développeur peut configurer les beans : durée de vie (scope)\, configuration à la création\, à la destruction\.\.\. 
+* Le développeur peut configurer les beans : durée de vie (scope)\, configuration à la création\, à la destruction\.\.\. (cf. Formation Spring Initiation)
 
 --
 # Inversion of Control

@@ -179,7 +179,7 @@ private Integer nbLignes = 10;
 * On aura de l’auto\-complétion et des infos au survol (Attention : Faire un Maven clean + install)
 
 --
-# Validation des peroperties
+# Validation des properties
 
 * Ex : ![](./img/diapo_formation_spring_boot_10.png)
 

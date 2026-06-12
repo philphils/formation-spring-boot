@@ -59,7 +59,7 @@
 --
 # Spring Boot : l’aboutissement
 
-* Nouvelle extension qui chapeaute toutes les autres 
+* Extension qui chapeaute toutes les autres 
 
 * Permet la configuration et le démarrage d’application avec un code minimal 
 
