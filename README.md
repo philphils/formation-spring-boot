@@ -593,11 +593,14 @@ Créez un contrôleur `DatabaseCheckController` dans le package `fr.insee.format
 @RestController
 public class DatabaseCheckController {
 
-    @Autowired
     private UniteLegaleRepository uniteLegaleRepository;
 
-    @Autowired
     private EtablissementRepository etablissementRepository;
+
+    public DatabaseCheckController(UniteLegaleRepository uniteLegaleRepository, EtablissementRepository etablissementRepository){
+        this.uniteLegaleRepository = uniteLegaleRepository;
+        this.etablissementRepository = etablissementRepository;
+    }
 
     @GetMapping("/check-database")
     public String checkDatabase() {
