@@ -50,7 +50,7 @@
 
 * Spring Boot permet d’activer les profiles avec la property : `spring.profiles.active` 
 
-* On peut la définir dans un fichier properties (peu d’intérêt), ou encore en variable d’environnement ou en ligne de commande 
+* On peut la définir dans un fichier properties, ou encore en variable d’environnement ou en ligne de commande 
 
 --
 # Activation des profiles

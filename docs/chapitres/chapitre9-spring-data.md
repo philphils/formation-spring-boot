@@ -150,10 +150,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 ```java
 @Service
 public class UserService {
-    
-    @Autowired
+
     private UserRepository userRepository;
-      
+
+    public UserService(UserRepository userRepository){
+        //Injection par constructeur gérée par Spring
+        this.userRepository = userRepository;
+    }
+
     public User getUserById(Long id) {
         return userRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException("User not found"));

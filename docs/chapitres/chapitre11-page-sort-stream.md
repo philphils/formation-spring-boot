@@ -62,7 +62,7 @@
     Page<T> findAll(Pageable pageable);
     ``` 
 
-- Pour les méthodes ajoutées au repository, il faut ajouter une définition contenant l'attribut `Pageable` et/ou `Sort` si besoin. Ex:
+- Pour les méthodes ajoutées au repository, il faut ajouter à l'interface une méthode contenant l'attribut `Pageable` et/ou `Sort`. Ex:
     ```java
     List<User> findByNameOrderByNameAsc(Pageable pageable);
     ``` 
@@ -191,4 +191,5 @@
                      + " habite en France !") 
         .forEach(string -> log.info(string));  //Fermeture du curseur
                                                //, récupération de toutes les lignes
-    ``` 
+    ```
+- On perd alors le bénéfice de l'utilisation d'un curseur en termes de performances

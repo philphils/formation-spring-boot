@@ -68,12 +68,12 @@
 |--------------------|------------------------------------|
 | `And`              | `WHERE name = ? AND email = ?`     |
 | `Or`               | `WHERE name = ? OR email = ?`      |
-| `Is`, `Equals`     | `WHERE name = ?`                   |
 | `Between`          | `WHERE age BETWEEN ? AND ?`        |
 | `LessThan`         | `WHERE age < ?`                    |
 | `LessThanEqual`    | `WHERE age <= ?`                   |
 | `GreaterThan`      | `WHERE age > ?`                    |
 | `GreaterThanEqual` | `WHERE age >= ?`                   |
+| `Is`, `Equals`     | `WHERE name = ?` (rendre l'égalité explicite) |
 
 
 --
