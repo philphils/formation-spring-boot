@@ -195,6 +195,8 @@ Vous avez une application web prête à être développée !
 5. Redémarrer manuellement le serveur ou attendre que la détection se fasse
    - Arrêter : clic sur le bouton "Stop" dans le Spring Boot Dashboard
    - Relancer : clic sur le bouton "Run"
+  
+**Note :** Pour des raisons de sécurité les devTools sont exclus par défaut du war produit par Spring-Boot. Laisser `<optional>true</optional>` pour plus de sécurité.
 
 ## 9 : Ajouter un 2ème controller sans redémarrer le serveur :
 
