@@ -30,7 +30,7 @@
 
 - Nos architectures utilisent Keycloak pour l'authentification.
 - Keycloack est notre Identity Provider (IdP)
-- C'est Keycloack qui fournit les tokens JWT, ie les jetons d'authentification.
+- C'est Keycloack qui fournit les tokens JWT (Json Web Token), ie les jetons d'authentification.
 
 --
 
@@ -103,8 +103,8 @@ _(Le téléchargement de la clef publique par l'API n'est effectué qu'une fois)
 - Ajout du starter :
    ```xml
     <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
     </dependency>
    ```
 - Une fois l'ajout du starter, 3 éléments à définir :
