@@ -23,7 +23,7 @@ Deux options :
 
 ### Avec VS Code et Spring Extension Pack :
 1. Ouvrir la palette de commandes (Ctrl+Shift+P)
-2. Taper "Spring Boot: Create a new Spring Boot project" et appuyer sur Entrée
+2. Taper "Spring Initializr: Create a maven project" et appuyer sur Entrée
 3. Suivre l'assistant de création qui s'ouvre
 
 ## 3 : Configurer votre projet :
