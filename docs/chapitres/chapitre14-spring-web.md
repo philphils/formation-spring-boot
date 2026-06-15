@@ -105,11 +105,11 @@ public class UserController {
 
 - **@PathVariable** : Pour les segments d'URL variables.
 
-    - GET /api/users/42 → @PathVariable Long id
+    - GET /api/users/**42** → @PathVariable Long id
 
 - **@RequestParam** : Pour les filtres ou la pagination.
 
-    - GET /api/users?role=admin → @RequestParam String role
+    - GET /api/users?**role=admin** → @RequestParam String role
 
 
 --
