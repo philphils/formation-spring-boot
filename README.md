@@ -266,7 +266,7 @@ public class UniteLegaleRepositoryTest {
         uniteLegale2.setCategorieJuridique(CategorieJuridique.SA);
         uniteLegaleRepository.save(uniteLegale2);
 
-        List<UniteLegale> result = uniteLegaleRepository.findByCategorieJuridique(CategorieJuridique.SA);
+        List<UniteLegaleProjection> result = uniteLegaleRepository.findByCategorieJuridique(CategorieJuridique.SA);
         assertEquals(2, result.size());
     }
 
@@ -284,7 +284,7 @@ public class UniteLegaleRepositoryTest {
         uniteLegale2.setCategorieJuridique(CategorieJuridique.SA);
         uniteLegaleRepository.save(uniteLegale2);
 
-        List<UniteLegaleProjection> result = uniteLegaleRepository.findUniteLegaleByCategorieJuridique(CategorieJuridique.SA);
+        List<UniteLegaleProjection> result = uniteLegaleRepository.findByCategorieJuridique(CategorieJuridique.SA);
         assertEquals(2, result.size());
         assertEquals("123456789", result.get(0).getSiren());
         assertEquals("Test Company 1", result.get(0).getDenomination());
@@ -324,7 +324,7 @@ public class UniteLegaleRepositoryTest {
         etablissementRepository.save(etablissement2);
 
         // Tester la méthode
-        List<UniteLegale> result = uniteLegaleRepository.findByCategorieJuridiqueWithEtablissements(CategorieJuridique.SA);
+        List<UniteLegale> result = uniteLegaleRepository.findByCategorieJuridiqueWithEtablissement(CategorieJuridique.SA);
         assertEquals(2, result.size());
 
         // Vérifier que les établissements sont instanciés et non vides
@@ -391,7 +391,7 @@ public class EtablissementRepositoryTest {
         etablissement2.setUniteLegale(uniteLegale);
         etablissementRepository.save(etablissement2);
 
-        List<Etablissement> result = etablissementRepository.findByUniteLegale(uniteLegale);
+        List<EtablissementProjection> result = etablissementRepository.findByUniteLegale(uniteLegale);
         assertEquals(2, result.size());
     }
 
@@ -444,7 +444,7 @@ public class EtablissementRepositoryTest {
         etablissement2.setUniteLegale(uniteLegale);
         etablissementRepository.save(etablissement2);
 
-        List<EtablissementProjection> result = etablissementRepository.findEtablissementByUniteLegale(uniteLegale);
+        List<EtablissementProjection> result = etablissementRepository.findByUniteLegale(uniteLegale);
         assertEquals(2, result.size());
         assertEquals("12345678900001", result.get(0).getSiret());
         assertEquals("1 Rue de Test", result.get(0).getAdresse());
