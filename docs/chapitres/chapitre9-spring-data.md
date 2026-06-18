@@ -36,7 +36,7 @@
 
 - Quand vous ajoutez cette dépendance, **Spring Boot configure automatiquement** :
 
-    - **EntityManager** : gestion du contexte de persistance
+    - **EntityManagerFactory** : gestion du contexte de persistance
     - **PlatformTransactionManager** : gestion des transactions
     - **DataSource** : connexion à la base de données
     - **JPA & Hibernate** : configuration par défaut

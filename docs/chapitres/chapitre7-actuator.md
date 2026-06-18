@@ -193,7 +193,7 @@ management.endpoints.web.exposure.exclude=beans,env
 
 * **Recommandations rapides** :
   - En **développement** : exposer tous les endpoints pour faciliter le débogage.
-  - En **production** : limiter à `health` et `metrics` (ou plus selon le besoin).
+  - En **production** : limiter à `health` (ou plus selon le besoin).
   - Toujours **sécuriser** via Spring Security (voir chapitre dédié).
   - Utiliser un **port dédié** et une **authentification forte** si nécessaire.
 

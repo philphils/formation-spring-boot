@@ -107,10 +107,28 @@ public class UserController {
 
     - GET /api/users/**42** → @PathVariable Long id
 
+```java
+@GetMapping("/api/users/{id}")
+public User getUserById(@PathVariable Long id) {
+    return userService.findById(id);
+}
+```
+
+--
+# Capturer les paramètres
+
 - **@RequestParam** : Pour les filtres ou la pagination.
 
     - GET /api/users?**role=admin** → @RequestParam String role
 
+```java
+@GetMapping("/api/users")
+public List<User> getUsersByRole(@RequestParam String role) {
+    return userService.findByRole(role);
+}
+```
+
+- On peut rendre le paramètre optionnel avec `@RequestParam(required = false)`
 
 --
 # Capturer les paramètres

@@ -62,6 +62,7 @@ public IReservationSalleService reservationSalleService() {
   return (IReservationSalleService) reservationSalleServiceImpl;
 }
 ```
+* Les annotations `@Bean` doivent être placées sur des méthodes de classes annotées `@Configuration`
 
 * Les applications plus anciennes utilisent des fichiers XML 
 

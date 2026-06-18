@@ -9,16 +9,16 @@
 
 - On pourra appliquer un tri sur notre requête (portant sur n'importe quel champ) avec :
     ```java
-    List<User> findByNameOrderByNameAsc(String start);
+    List<User> findByCountryOrderByNameAsc(Country country);
     ``` 
 - On pourra aussi choisir de ne récupérer que les N premiers ou derniers résultats :
     ```java
     //ici N = 0
-    User findFirstByNameOrderByNameDesc(String start);
+    User findFirstByCountryOrderByNameDesc(Country country);
     ```
     ```java
     //ici N = 3
-    List<User> findTop3ByNameOrderByNameDesc(String start);
+    List<User> findTop3ByCountryOrderByNameDesc(Country country);
     ``` 
 
 --
@@ -27,7 +27,7 @@
 
 - Enfin pour rendre la limite paramétrable, on pourra utiliser la classe `org.springframework.data.domain.Limit`:
     ```java
-    List<User> findByNameOrderByNameAsc(Limit limit);
+    List<User> findByCountryOrderByNameAsc(Country country, Limit limit);
     ``` 
 - Pour des besoin plus poussés, on utilisera les `Pageable` et les `Sort`...
 
@@ -64,7 +64,7 @@
 
 - Pour les méthodes ajoutées au repository, il faut ajouter à l'interface une méthode contenant l'attribut `Pageable` et/ou `Sort`. Ex:
     ```java
-    List<User> findByNameOrderByNameAsc(Pageable pageable);
+    Page<User> findByCountryOrderByNameAsc(Pageable pageable);
     ``` 
 
 --
@@ -72,26 +72,27 @@
 ## Exemple de Pageable
 
 - Utilisation :
-    ```java
-    Pageable firstPageWithTwoElements = PageRequest.of(0, 5);
+```java
+Pageable pageable = PageRequest.of(0, 5);
 
-    Page<User> pageUser = 
-        userRepository.findByNameOrderByNameAsc(firstPageWithFiveElements);
+Page<User> pageUser =
+    userRepository.findByCountryOrderByNameAsc(country, pageable);
 
-    for(User user: pageUser) { 
-        ... //On itère sur les 5 éléments constituants la 1ère page
+for (User user : pageUser) {
+    // traitement
+}
+
+if (pageUser.hasNext()) {
+    Pageable nextPageable = pageUser.nextPageable();
+
+    Page<User> secondPageUser =
+        userRepository.findByCountryOrderByNameAsc(country, nextPageable);
+
+    for (User user : secondPageUser) {
+        // traitement
     }
-
-    //Constitution du pageable suivant
-    Pageable secondPageWithTwoElements = 
-        firstPageWithTwoElements.nextPageable();
-
-    //Récupération des résultats suivants
-    Page<User> secondPageUser = 
-        userRepository.findByNameOrderByNameAsc(secondPageWithTwoElements);
-    ...
-
-    ``` 
+}
+``` 
 
 --
 
