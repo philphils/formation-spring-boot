@@ -193,7 +193,7 @@ Créez l'interface `UniteLegaleRepository` dans le package `fr.insee.formation.r
     - une unité légale par `siren` (vous pouvez utiliser la classe Optional)
     - des unités légales dont la `denomination` contient une chaîne de caractère
     - des projections DTO des unités légales par `categorieJuridique`.
-- Ajoutez une méthode personnalisée utilisant `@Query` pour récupérer des unités légales par `categorieJuridique` avec leurs établissements instanciés.
+- Ajoutez une méthode personnalisée que vous nommerez `findByCategorieJuridiqueWithEtablissement` utilisant `@Query` pour récupérer des unités légales par `categorieJuridique` avec leurs établissements instanciés.
 
 ### 4.2. Repository `EtablissementRepository`
 Créez l'interface `EtablissementRepository` dans le package `fr.insee.formation.repository` :
