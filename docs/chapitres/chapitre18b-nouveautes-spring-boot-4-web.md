@@ -44,7 +44,7 @@ spring.mvc.apiversion.use.header=X-API-Version
 ### Options de résolution de version (`spring.mvc.apiversion.use`):
 - `header` : Version dans un header HTTP (ex: `X-API-Version: 2.0`)
 - `parameter` : Version dans un paramètre de requête (ex: `?api-version=2.0`)
-- `media-type` : Version dans le `Accept` header (ex: `Accept: application/vnd.company.v2+json`)
+- `media-type` : Version dans le `Accept` header (ex: `Accept: application/json;version=2.0`)
 - `path-segment` : Version dans le chemin de l'URL (ex: `/v2/users`)
 
 --

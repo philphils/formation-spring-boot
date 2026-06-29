@@ -188,7 +188,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 spring.security.oauth2.resourceserver.jwt.issuer-uri=https://keycloak/realms/myrealm
 # Définit le nom du claim contenant les rôles dans le JWT
 spring.security.oauth2.resourceserver.jwt.authorities-claim-name=realm_access.roles
-# Définit un éventuel préfixe à ajouter aux rôles
+# Définit un éventuel préfixe à ajouter aux rôles côté Spring
 spring.security.oauth2.resourceserver.jwt.authority-prefix=ROLE_
 ```
 
@@ -342,7 +342,7 @@ CorsConfigurationSource corsConfigurationSource() {
       return context;
   }
   ```
-
+- <span style="color: red">Attention !!! Ne pas déployer ce endpoint en production</span>
 --
 
 ### Tester Spring Security
