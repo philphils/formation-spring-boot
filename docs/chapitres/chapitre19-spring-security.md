@@ -144,16 +144,25 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // et non via des cookies de session
         .csrf(csrf -> csrf.disable())
 
-        // L'API est stateless : Spring Security ne doit donc pas créer de session
+        // On renvoit vers le bean `corsConfigurationSource()` 
+        // pour configurer le CORS (cf. diapo suite)
+        .cors(Customizer.withDefaults())
+
+
+        // L'API est stateless : Spring Security 
+        // ne doit donc pas créer de session
         .sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
         .authorizeHttpRequests(auth -> auth
-            // Définition des URLs n'exigeant pas d'authentification
+            // Définition des URLs n'exigeant
+            //  pas d'authentification
             .requestMatchers(listeUrlPermises.toArray(new String[0])).permitAll()
 
-            // On autorise les requêtes OPTIONS utilisées pour les requêtes CORS preflight,
-            // c-à-d permettant de vérifier si le site d'origine est autorisé à appeler l'API
+            // On autorise les requêtes OPTIONS
+            //  utilisées pour les requêtes CORS preflight,
+            // c-à-d permettant de vérifier 
+            // si le site d'origine est autorisé à appeler l'API
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
             // On demande une authentification pour toutes les autres URLs
@@ -195,10 +204,59 @@ spring.security.oauth2.resourceserver.jwt.authority-prefix=ROLE_
 - On préfera souvent définir les règles dans les controllers via les annotations Spring Security
 
 --
+### CORS : définition
+
+- **CORS** signifie **Cross-Origin Resource Sharing**.
+- Une origine correspond à : protocole + domaine + port :
+  - Exemple : ``http://mon-appli.com:4200`` et ``http://mon-api.com:8080`` sont deux origines différentes.
+- CORS permet à l'API d'indiquer quels frontends ont le droit de l'appeler depuis un navigateur (ne remplace pas l'authentification via JWT)
+- Utile seulement si l'API et le frontend sont sur des origines différentes.
+
+--
+### CORS : preflight
+
+- Pour certaines requêtes cross-origin, le navigateur envoie d'abord une requête ``OPTIONS``.
+- Cette requête s'appelle une **preflight request**.
+- Elle permet de vérifier si l'origine, la méthode et les headers sont autorisés.
+- Exemple : une requête avec un header ``Authorization`` déclenche généralement une preflight.
+
+```http
+OPTIONS /api/users
+Origin: http://localhost:4200
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: authorization, content-type
+```
+
+--
+### Exemple de configuration CORS
+
+```java
+@Bean
+CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
+
+    config.setAllowedOrigins(List.of("http://mon-appli.com:4200"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+    config.setAllowCredentials(false);
+    config.setMaxAge(3600L);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
+}
+```
+
+- Dans le bean ``SecurityFilterChain``, on active aussi :
+```java
+.cors(Customizer.withDefaults())
+```
+
+--
 ### Définition des rôles et permissions
 
 - On active les annotations Spring Security avec ``@EnableMethodSecurity`` dans la classe de configuration
-- On peut ensiute définir les rôles et permissions dans les controllers avec ``@PreAuthorize``, ex:
+- On peut ensuite définir les rôles et permissions dans les controllers avec ``@PreAuthorize``, ex:
    ```java
    @PreAuthorize("hasRole('ADMIN')")
    @GetMapping("/admin")
