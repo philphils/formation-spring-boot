@@ -64,8 +64,8 @@ Le client représente votre application Spring Boot côté Keycloak.
 
 ### Login settings
 
--   Root URL : http://localhost:8080\
--   Valid Redirect URIs : \*\
+-   Root URL : http://localhost:8080
+-   Valid Redirect URIs : *
 -   Web Origins : \* (important pour éviter les erreurs CORS)
 
 → Save
