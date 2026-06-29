@@ -115,6 +115,10 @@ Créer les rôles :
 
 (Optionnel : créer `admin1` avec le rôle `ADMIN`)
 
+### Verification compte utilisateur
+
+Cocher : Email Verified
+
 ------------------------------------------------------------------------
 
 ## 6. Vérification du Point de Terminaison
